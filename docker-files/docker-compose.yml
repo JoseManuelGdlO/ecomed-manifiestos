@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Base de datos MySQL
+  mysql:
+    build: .
+    container_name: ecomed_mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ecomed_db
+      MYSQL_USER: ecomed_user
+      MYSQL_PASSWORD: ecomed123
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ecomed_network
+
+  # Backend API (opcional - para desarrollo completo)
+  backend:
+    build: ./backend
+    container_name: ecomed_backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ecomed_db
+      DB_USER: ecomed_user
+      DB_PASSWORD: ecomed123
+      JWT_SECRET: tu_jwt_secret_super_seguro_aqui
+    depends_on:
+      - mysql
+    networks:
+      - ecomed_network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+volumes:
+  mysql_data:
+
+networks:
+  ecomed_network:
+    driver: bridge 

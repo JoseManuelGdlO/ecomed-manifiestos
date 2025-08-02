@@ -1,0 +1,408 @@
+const { Cliente, Destino, Transportista } = require('../models');
+
+// Obtener todos los clientes (solo activos)
+const getAllClientes = async (req, res) => {
+  try {
+    const clientes = await Cliente.findAll({
+      include: [
+        {
+          model: Destino,
+          as: 'destino',
+          attributes: ['id', 'nombre', 'razon_social']
+        },
+        {
+          model: Transportista,
+          as: 'transportista',
+          attributes: ['id', 'razon_social', 'placa']
+        }
+      ],
+      order: [['created_at', 'DESC']],
+      paranoid: true // Solo clientes no eliminados
+    });
+
+    res.json({
+      success: true,
+      data: clientes
+    });
+
+  } catch (error) {
+    console.error('Error al obtener clientes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Obtener cliente por ID (solo activos)
+const getClienteById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const cliente = await Cliente.findByPk(id, {
+      include: [
+        {
+          model: Destino,
+          as: 'destino',
+          attributes: ['id', 'nombre', 'razon_social', 'codigo_postal', 'calle', 'colonia', 'delegacion', 'estado']
+        },
+        {
+          model: Transportista,
+          as: 'transportista',
+          attributes: ['id', 'razon_social', 'placa', 'tipo_vehiculo', 'ruta_empresa']
+        }
+      ],
+      paranoid: true // Solo clientes no eliminados
+    });
+
+    if (!cliente) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cliente no encontrado'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: cliente
+    });
+
+  } catch (error) {
+    console.error('Error al obtener cliente:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Crear nuevo cliente
+const createCliente = async (req, res) => {
+  try {
+    const { 
+      numero_registro_ambiental, 
+      nombre_razon_social, 
+      codigo_postal, 
+      calle, 
+      num_ext, 
+      num_int, 
+      colonia, 
+      delegacion, 
+      estado, 
+      telefono, 
+      correo, 
+      zona, 
+      id_destino, 
+      id_transportista 
+    } = req.body;
+
+    // Verificar si el destino existe
+    const destino = await Destino.findByPk(id_destino, { paranoid: true });
+    if (!destino) {
+      return res.status(400).json({
+        success: false,
+        message: 'El destino especificado no existe'
+      });
+    }
+
+    // Verificar si el transportista existe
+    const transportista = await Transportista.findByPk(id_transportista, { paranoid: true });
+    if (!transportista) {
+      return res.status(400).json({
+        success: false,
+        message: 'El transportista especificado no existe'
+      });
+    }
+
+    // Crear nuevo cliente
+    const newCliente = await Cliente.create({
+      numero_registro_ambiental,
+      nombre_razon_social,
+      codigo_postal,
+      calle,
+      num_ext,
+      num_int,
+      colonia,
+      delegacion,
+      estado,
+      telefono,
+      correo,
+      zona,
+      id_destino,
+      id_transportista
+    });
+
+    // Obtener el cliente creado con sus relaciones
+    const clienteCreado = await Cliente.findByPk(newCliente.id, {
+      include: [
+        {
+          model: Destino,
+          as: 'destino',
+          attributes: ['id', 'nombre', 'razon_social']
+        },
+        {
+          model: Transportista,
+          as: 'transportista',
+          attributes: ['id', 'razon_social', 'placa']
+        }
+      ]
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Cliente creado exitosamente',
+      data: clienteCreado
+    });
+
+  } catch (error) {
+    console.error('Error al crear cliente:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Actualizar cliente
+const updateCliente = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { 
+      numero_registro_ambiental, 
+      nombre_razon_social, 
+      codigo_postal, 
+      calle, 
+      num_ext, 
+      num_int, 
+      colonia, 
+      delegacion, 
+      estado, 
+      telefono, 
+      correo, 
+      zona, 
+      id_destino, 
+      id_transportista 
+    } = req.body;
+
+    const cliente = await Cliente.findByPk(id, { paranoid: true });
+    if (!cliente) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cliente no encontrado'
+      });
+    }
+
+    // Verificar si el destino existe (si se está actualizando)
+    if (id_destino) {
+      const destino = await Destino.findByPk(id_destino, { paranoid: true });
+      if (!destino) {
+        return res.status(400).json({
+          success: false,
+          message: 'El destino especificado no existe'
+        });
+      }
+    }
+
+    // Verificar si el transportista existe (si se está actualizando)
+    if (id_transportista) {
+      const transportista = await Transportista.findByPk(id_transportista, { paranoid: true });
+      if (!transportista) {
+        return res.status(400).json({
+          success: false,
+          message: 'El transportista especificado no existe'
+        });
+      }
+    }
+
+    // Actualizar cliente
+    await cliente.update({
+      numero_registro_ambiental: numero_registro_ambiental !== undefined ? numero_registro_ambiental : cliente.numero_registro_ambiental,
+      nombre_razon_social: nombre_razon_social || cliente.nombre_razon_social,
+      codigo_postal: codigo_postal || cliente.codigo_postal,
+      calle: calle || cliente.calle,
+      num_ext: num_ext || cliente.num_ext,
+      num_int: num_int !== undefined ? num_int : cliente.num_int,
+      colonia: colonia || cliente.colonia,
+      delegacion: delegacion || cliente.delegacion,
+      estado: estado || cliente.estado,
+      telefono: telefono !== undefined ? telefono : cliente.telefono,
+      correo: correo !== undefined ? correo : cliente.correo,
+      zona: zona || cliente.zona,
+      id_destino: id_destino || cliente.id_destino,
+      id_transportista: id_transportista || cliente.id_transportista
+    });
+
+    // Obtener el cliente actualizado con sus relaciones
+    const clienteActualizado = await Cliente.findByPk(id, {
+      include: [
+        {
+          model: Destino,
+          as: 'destino',
+          attributes: ['id', 'nombre', 'razon_social']
+        },
+        {
+          model: Transportista,
+          as: 'transportista',
+          attributes: ['id', 'razon_social', 'placa']
+        }
+      ]
+    });
+
+    res.json({
+      success: true,
+      message: 'Cliente actualizado exitosamente',
+      data: clienteActualizado
+    });
+
+  } catch (error) {
+    console.error('Error al actualizar cliente:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Eliminar cliente (baja lógica)
+const deleteCliente = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const cliente = await Cliente.findByPk(id, { paranoid: true });
+    if (!cliente) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cliente no encontrado'
+      });
+    }
+
+    await cliente.destroy(); // Soft delete
+
+    res.json({
+      success: true,
+      message: 'Cliente eliminado exitosamente'
+    });
+
+  } catch (error) {
+    console.error('Error al eliminar cliente:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Restaurar cliente eliminado
+const restoreCliente = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const cliente = await Cliente.findByPk(id, { paranoid: false });
+    if (!cliente) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cliente no encontrado'
+      });
+    }
+
+    if (!cliente.deleted_at) {
+      return res.status(400).json({
+        success: false,
+        message: 'El cliente no está eliminado'
+      });
+    }
+
+    await cliente.restore();
+
+    res.json({
+      success: true,
+      message: 'Cliente restaurado exitosamente'
+    });
+
+  } catch (error) {
+    console.error('Error al restaurar cliente:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Eliminar cliente permanentemente
+const forceDeleteCliente = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const cliente = await Cliente.findByPk(id, { paranoid: false });
+    if (!cliente) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cliente no encontrado'
+      });
+    }
+
+    await cliente.destroy({ force: true }); // Hard delete
+
+    res.json({
+      success: true,
+      message: 'Cliente eliminado permanentemente'
+    });
+
+  } catch (error) {
+    console.error('Error al eliminar cliente permanentemente:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Obtener clientes eliminados
+const getDeletedClientes = async (req, res) => {
+  try {
+    const clientes = await Cliente.findAll({
+      include: [
+        {
+          model: Destino,
+          as: 'destino',
+          attributes: ['id', 'nombre', 'razon_social']
+        },
+        {
+          model: Transportista,
+          as: 'transportista',
+          attributes: ['id', 'razon_social', 'placa']
+        }
+      ],
+      order: [['deleted_at', 'DESC']],
+      paranoid: false,
+      where: {
+        deleted_at: {
+          [require('sequelize').Op.ne]: null
+        }
+      }
+    });
+
+    res.json({
+      success: true,
+      data: clientes
+    });
+
+  } catch (error) {
+    console.error('Error al obtener clientes eliminados:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+module.exports = {
+  getAllClientes,
+  getClienteById,
+  createCliente,
+  updateCliente,
+  deleteCliente,
+  restoreCliente,
+  forceDeleteCliente,
+  getDeletedClientes
+}; 
