@@ -238,7 +238,49 @@ const options = {
           }
         }
       }
-    }
+    },
+    tags: [
+      {
+        name: 'Autenticación',
+        description: 'Endpoints para autenticación de usuarios'
+      },
+      {
+        name: 'Roles',
+        description: 'Gestión de roles de usuario'
+      },
+      {
+        name: 'Usuarios',
+        description: 'Gestión de usuarios del sistema'
+      },
+      {
+        name: 'Residuos',
+        description: 'Catálogo de tipos de residuos'
+      },
+      {
+        name: 'Destinos',
+        description: 'Gestión de destinos de disposición final'
+      },
+      {
+        name: 'Vehículos',
+        description: 'Gestión de vehículos para transporte'
+      },
+      {
+        name: 'Transportistas',
+        description: 'Gestión de empresas transportistas'
+      },
+      {
+        name: 'Clientes',
+        description: 'Gestión de clientes generadores de residuos'
+      },
+      {
+        name: 'Manifiestos',
+        description: 'Gestión de manifiestos de residuos'
+      },
+      {
+        name: 'Estados de Manifiestos',
+        description: 'Gestión de estados de los manifiestos'
+      }
+    ]
   },
   apis: ['./routes/*.js', './controllers/*.js']
 };

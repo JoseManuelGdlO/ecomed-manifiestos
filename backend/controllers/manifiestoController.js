@@ -1,15 +1,85 @@
 const { Manifiesto, Cliente, Residuo, ManifiestoResiduo, Destino, Transportista } = require('../models');
 const { Op } = require('sequelize');
 
-// Obtener todos los manifiestos (solo activos)
+// Obtener todos los manifiestos con paginación y filtros
 const getAllManifiestos = async (req, res) => {
   try {
-    const manifiestos = await Manifiesto.findAll({
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      numero_libro,
+      id_cliente,
+      id_destino,
+      id_transportista,
+      fecha_inicio,
+      fecha_fin,
+      sortBy = 'created_at',
+      sortOrder = 'DESC'
+    } = req.query;
+
+    // Configurar paginación
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const limitNum = parseInt(limit);
+
+    // Construir filtros
+    const whereClause = {
+      deleted_at: null // Solo manifiestos activos
+    };
+
+    // Filtro de búsqueda general
+    if (search) {
+      whereClause[Op.or] = [
+        { numero_libro: { [Op.like]: `%${search}%` } }
+      ];
+    }
+
+    // Filtros específicos
+    if (numero_libro) {
+      whereClause.numero_libro = { [Op.like]: `%${numero_libro}%` };
+    }
+
+    if (id_cliente) {
+      whereClause.id_cliente = parseInt(id_cliente);
+    }
+
+    // Filtros de fecha
+    if (fecha_inicio || fecha_fin) {
+      whereClause.created_at = {};
+      if (fecha_inicio) {
+        whereClause.created_at[Op.gte] = new Date(fecha_inicio);
+      }
+      if (fecha_fin) {
+        whereClause.created_at[Op.lte] = new Date(fecha_fin + ' 23:59:59');
+      }
+    }
+
+    // Construir filtros para includes
+    const clienteWhere = {};
+    if (id_destino) {
+      clienteWhere.id_destino = parseInt(id_destino);
+    }
+    if (id_transportista) {
+      clienteWhere.id_transportista = parseInt(id_transportista);
+    }
+
+    // Validar ordenamiento
+    const allowedSortFields = [
+      'id', 'numero_libro', 'created_at', 'updated_at'
+    ];
+    
+    const validSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'created_at';
+    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder.toUpperCase()) ? sortOrder.toUpperCase() : 'DESC';
+
+    // Realizar consulta con paginación
+    const { count, rows: manifiestos } = await Manifiesto.findAndCountAll({
+      where: whereClause,
       include: [
         { 
           model: Cliente, 
           as: 'cliente', 
           attributes: ['id', 'nombre_razon_social', 'numero_registro_ambiental'],
+          where: Object.keys(clienteWhere).length > 0 ? clienteWhere : undefined,
           include: [
             { model: Destino, as: 'destino', attributes: ['id', 'nombre', 'razon_social'] },
             { model: Transportista, as: 'transportista', attributes: ['id', 'razon_social', 'placa'] }
@@ -24,10 +94,43 @@ const getAllManifiestos = async (req, res) => {
           }
         }
       ],
-      order: [['created_at', 'DESC']],
+      order: [[validSortBy, validSortOrder]],
+      limit: limitNum,
+      offset: offset,
       paranoid: true
     });
-    res.json({ success: true, data: manifiestos });
+
+    // Calcular información de paginación
+    const totalPages = Math.ceil(count / limitNum);
+    const currentPage = parseInt(page);
+    const hasNextPage = currentPage < totalPages;
+    const hasPrevPage = currentPage > 1;
+
+    res.json({
+      success: true,
+      data: manifiestos,
+      pagination: {
+        total: count,
+        totalPages,
+        currentPage,
+        limit: limitNum,
+        hasNextPage,
+        hasPrevPage,
+        nextPage: hasNextPage ? currentPage + 1 : null,
+        prevPage: hasPrevPage ? currentPage - 1 : null
+      },
+      filters: {
+        search: search || null,
+        numero_libro: numero_libro || null,
+        id_cliente: id_cliente || null,
+        id_destino: id_destino || null,
+        id_transportista: id_transportista || null,
+        fecha_inicio: fecha_inicio || null,
+        fecha_fin: fecha_fin || null,
+        sortBy: validSortBy,
+        sortOrder: validSortOrder
+      }
+    });
   } catch (error) {
     console.error('Error al obtener manifiestos:', error);
     res.status(500).json({ success: false, message: 'Error interno del servidor' });
@@ -358,6 +461,56 @@ const getDeletedManifiestos = async (req, res) => {
   }
 };
 
+// Obtener opciones de filtros disponibles para manifiestos
+const getManifiestoFilters = async (req, res) => {
+  try {
+    // Obtener clientes disponibles
+    const clientes = await Cliente.findAll({
+      attributes: ['id', 'nombre_razon_social', 'numero_registro_ambiental'],
+      where: { deleted_at: null },
+      order: [['nombre_razon_social', 'ASC']]
+    });
+
+    // Obtener destinos disponibles
+    const destinos = await Destino.findAll({
+      attributes: ['id', 'nombre', 'razon_social'],
+      where: { deleted_at: null },
+      order: [['nombre', 'ASC']]
+    });
+
+    // Obtener transportistas disponibles
+    const transportistas = await Transportista.findAll({
+      attributes: ['id', 'razon_social', 'placa'],
+      where: { deleted_at: null },
+      order: [['razon_social', 'ASC']]
+    });
+
+    // Obtener residuos disponibles
+    const residuos = await Residuo.findAll({
+      attributes: ['id', 'nombre', 'descripcion'],
+      where: { deleted_at: null },
+      order: [['nombre', 'ASC']]
+    });
+
+    res.json({
+      success: true,
+      data: {
+        clientes,
+        destinos,
+        transportistas,
+        residuos
+      }
+    });
+
+  } catch (error) {
+    console.error('Error al obtener filtros de manifiestos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
 module.exports = {
   getAllManifiestos,
   getManifiestoById,
@@ -366,5 +519,6 @@ module.exports = {
   deleteManifiesto,
   restoreManifiesto,
   forceDeleteManifiesto,
-  getDeletedManifiestos
+  getDeletedManifiestos,
+  getManifiestoFilters
 }; 

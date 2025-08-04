@@ -54,3 +54,7 @@ docker-compose.override.yml
 # Archivos de backup
 *.bak
 *.backup
+
+# Directorio de uploads temporales
+uploads/
+backend/uploads/

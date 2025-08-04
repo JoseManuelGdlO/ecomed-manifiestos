@@ -1,0 +1,6 @@
+numero_registro_ambiental,nombre_razon_social,codigo_postal,calle,num_ext,num_int,colonia,delegacion,estado,telefono,correo,zona,id_destino,id_transportista
+RAMA-001-2024,Empresa Industrial del Norte S.A. de C.V.,12345,Av. Industrial,123,A,Parque Industrial Norte,Cuauhtémoc,CDMX,555-123-4567,contacto@empresanorte.com,Zona Norte,1,1
+RAMA-002-2024,Comercial del Sur S.A. de C.V.,54321,Calle Comercial,456,B,Centro Comercial Sur,Tlalpan,CDMX,555-234-5678,info@comercialsur.com,Zona Sur,1,1
+RAMA-003-2024,Manufacturas del Este S.A. de C.V.,67890,Boulevard Este,789,C,Polígono Industrial Este,Iztapalapa,CDMX,555-345-6789,ventas@manufacturase.com,Zona Este,1,1
+RAMA-004-2024,Servicios del Oeste S.A. de C.V.,13579,Carretera Oeste,321,D,Zona Industrial Oeste,Álvaro Obregón,CDMX,555-456-7890,servicios@serviciosoeste.com,Zona Oeste,1,1
+RAMA-005-2024,Distribuidora Central S.A. de C.V.,24680,Av. Central,654,E,Centro Distribución,Miguel Hidalgo,CDMX,555-567-8901,distribucion@central.com,Zona Centro,1,1 
