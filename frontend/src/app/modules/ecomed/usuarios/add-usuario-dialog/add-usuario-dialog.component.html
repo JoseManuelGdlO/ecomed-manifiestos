@@ -1,0 +1,85 @@
+<mat-dialog-content class="p-6">
+  <div class="flex items-center mb-6">
+    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-on-primary mr-3">
+      <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+    </div>
+    <div>
+      <h2 class="text-xl font-semibold">Agregar Nuevo Usuario</h2>
+      <p class="text-secondary">Completa la información del usuario</p>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="mb-4">
+    <div class="flex items-center p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+      <mat-icon class="text-red-500 mr-2" [svgIcon]="'heroicons_outline:exclamation-triangle'"></mat-icon>
+      <span class="text-red-700 dark:text-red-400 text-sm">{{ error }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="usuarioForm" class="space-y-4">
+    <!-- Información Personal -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Nombre *</mat-label>
+        <input matInput formControlName="nombre" placeholder="Ej: Juan" required>
+        <mat-error *ngIf="usuarioForm.get('nombre')?.hasError('required')">El nombre es requerido</mat-error>
+        <mat-error *ngIf="usuarioForm.get('nombre')?.hasError('minlength')">El nombre debe tener al menos 2 caracteres</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Apellido *</mat-label>
+        <input matInput formControlName="apellido" placeholder="Ej: Pérez" required>
+        <mat-error *ngIf="usuarioForm.get('apellido')?.hasError('required')">El apellido es requerido</mat-error>
+        <mat-error *ngIf="usuarioForm.get('apellido')?.hasError('minlength')">El apellido debe tener al menos 2 caracteres</mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Información de Acceso -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Correo Electrónico *</mat-label>
+        <input matInput formControlName="email" placeholder="Ej: juan@ecomed.com" type="email" required>
+        <mat-error *ngIf="usuarioForm.get('email')?.hasError('required')">El correo electrónico es requerido</mat-error>
+        <mat-error *ngIf="usuarioForm.get('email')?.hasError('email')">Correo electrónico inválido</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Contraseña *</mat-label>
+        <input matInput formControlName="password" placeholder="Mínimo 6 caracteres" type="password" required>
+        <mat-error *ngIf="usuarioForm.get('password')?.hasError('required')">La contraseña es requerida</mat-error>
+        <mat-error *ngIf="usuarioForm.get('password')?.hasError('minlength')">La contraseña debe tener al menos 6 caracteres</mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Rol -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Rol *</mat-label>
+      <mat-select formControlName="id_role" required>
+        <mat-option *ngFor="let role of roles" [value]="role.id">
+          {{ role.nombre }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="usuarioForm.get('id_role')?.hasError('required')">El rol es requerido</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    type="button"
+    mat-stroked-button
+    (click)="onCancel()"
+    [disabled]="loading">
+    Cancelar
+  </button>
+  <button
+    type="button"
+    mat-flat-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="usuarioForm.invalid || loading">
+    <mat-spinner *ngIf="loading" diameter="20" class="mr-2"></mat-spinner>
+    <span *ngIf="!loading">Crear Usuario</span>
+    <span *ngIf="loading">Creando...</span>
+  </button>
+</mat-dialog-actions> 

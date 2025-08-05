@@ -222,9 +222,7 @@ export const appRoutes: Route[] = [
             {path: 'catalogos/vehiculos', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
 
             // Ecomed Routes - Usuarios (Admin only)
-            {path: 'usuarios', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
-            {path: 'usuarios/nuevo', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
-            {path: 'usuarios/roles', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'usuarios', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/ecomed/usuarios/usuarios.routes')},
 
             // 404 & Catch all
             {path: '404-not-found', pathMatch: 'full', loadChildren: () => import('app/modules/admin/pages/error/error-404/error-404.routes')},

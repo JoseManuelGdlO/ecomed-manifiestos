@@ -6,8 +6,8 @@ const getAllRoles = async (req, res) => {
     const roles = await Role.findAll({
       include: [{
         model: User,
-        as: 'usuarios',
-        attributes: ['id', 'nombre_completo', 'correo']
+        as: 'users',
+        attributes: ['id', 'nombre', 'apellido', 'email']
       }],
       order: [['created_at', 'DESC']],
       paranoid: true // Solo roles no eliminados
@@ -35,8 +35,8 @@ const getRoleById = async (req, res) => {
     const role = await Role.findByPk(id, {
       include: [{
         model: User,
-        as: 'usuarios',
-        attributes: ['id', 'nombre_completo', 'correo']
+        as: 'users',
+        attributes: ['id', 'nombre', 'apellido', 'email']
       }],
       paranoid: true // Solo roles no eliminados
     });
@@ -152,7 +152,7 @@ const deleteRole = async (req, res) => {
 
     // Verificar si hay usuarios usando este rol
     const usersWithRole = await User.count({ 
-      where: { id_rol: id },
+      where: { id_role: id },
       paranoid: true // Solo usuarios activos
     });
     if (usersWithRole > 0) {
@@ -229,7 +229,7 @@ const forceDeleteRole = async (req, res) => {
 
     // Verificar si hay usuarios usando este rol (incluyendo eliminados)
     const usersWithRole = await User.count({ 
-      where: { id_rol: id },
+      where: { id_role: id },
       paranoid: false
     });
     if (usersWithRole > 0) {
@@ -261,8 +261,8 @@ const getDeletedRoles = async (req, res) => {
     const roles = await Role.findAll({
       include: [{
         model: User,
-        as: 'usuarios',
-        attributes: ['id', 'nombre_completo', 'correo']
+        as: 'users',
+        attributes: ['id', 'nombre', 'apellido', 'email']
       }],
       order: [['deleted_at', 'DESC']],
       paranoid: false,

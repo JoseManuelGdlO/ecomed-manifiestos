@@ -3,20 +3,53 @@ const { User, Role } = require('../models');
 // Obtener todos los usuarios (solo activos)
 const getAllUsers = async (req, res) => {
   try {
+    const { page = 1, limit = 10, sort = 'id', order = 'asc', search = '' } = req.query;
+
+    let whereClause = {};
+
+    if (search && search.trim() !== '') {
+      whereClause = {
+        [require('sequelize').Op.or]: [
+          { nombre: { [require('sequelize').Op.like]: `%${search}%` } },
+          { apellido: { [require('sequelize').Op.like]: `%${search}%` } },
+          { email: { [require('sequelize').Op.like]: `%${search}%` } }
+        ]
+      };
+    }
+
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    let orderClause = [[sort, order.toUpperCase()]];
+    if (sort === 'created_at') {
+      orderClause = [['created_at', order.toUpperCase()]];
+    }
+
+    const total = await User.count({
+      where: whereClause,
+      paranoid: true
+    });
+
     const users = await User.findAll({
+      where: whereClause,
       include: [{
         model: Role,
-        as: 'rol',
+        as: 'role',
         attributes: ['id', 'nombre']
       }],
-      attributes: { exclude: ['contrasena'] },
-      order: [['created_at', 'DESC']],
+      attributes: { exclude: ['password'] },
+      order: orderClause,
+      limit: parseInt(limit),
+      offset: offset,
       paranoid: true // Solo usuarios no eliminados
     });
 
     res.json({
       success: true,
-      data: users
+      data: users,
+      total: total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(total / parseInt(limit))
     });
 
   } catch (error) {
@@ -36,10 +69,10 @@ const getUserById = async (req, res) => {
     const user = await User.findByPk(id, {
       include: [{
         model: Role,
-        as: 'rol',
+        as: 'role',
         attributes: ['id', 'nombre']
       }],
-      attributes: { exclude: ['contrasena'] },
+      attributes: { exclude: ['password'] },
       paranoid: true // Solo usuarios no eliminados
     });
 
@@ -67,10 +100,10 @@ const getUserById = async (req, res) => {
 // Crear nuevo usuario
 const createUser = async (req, res) => {
   try {
-    const { nombre_completo, correo, contrasena, id_rol } = req.body;
+    const { nombre, apellido, email, password, id_role } = req.body;
 
     // Verificar si el usuario ya existe
-    const existingUser = await User.findOne({ where: { correo } });
+    const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -79,7 +112,7 @@ const createUser = async (req, res) => {
     }
 
     // Verificar si el rol existe
-    const role = await Role.findByPk(id_rol);
+    const role = await Role.findByPk(id_role);
     if (!role) {
       return res.status(400).json({
         success: false,
@@ -89,20 +122,21 @@ const createUser = async (req, res) => {
 
     // Crear nuevo usuario
     const newUser = await User.create({
-      nombre_completo,
-      correo,
-      contrasena,
-      id_rol
+      nombre,
+      apellido,
+      email,
+      password,
+      id_role
     });
 
     // Obtener usuario con rol
     const userWithRole = await User.findByPk(newUser.id, {
       include: [{
         model: Role,
-        as: 'rol',
+        as: 'role',
         attributes: ['id', 'nombre']
       }],
-      attributes: { exclude: ['contrasena'] }
+      attributes: { exclude: ['password'] }
     });
 
     res.status(201).json({
@@ -124,7 +158,7 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre_completo, correo, contrasena, id_rol } = req.body;
+    const { nombre, apellido, email, password, id_role } = req.body;
 
     const user = await User.findByPk(id);
     if (!user) {
@@ -135,8 +169,8 @@ const updateUser = async (req, res) => {
     }
 
     // Verificar si el correo ya existe en otro usuario
-    if (correo && correo !== user.correo) {
-      const existingUser = await User.findOne({ where: { correo } });
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ where: { email } });
       if (existingUser) {
         return res.status(400).json({
           success: false,
@@ -146,8 +180,8 @@ const updateUser = async (req, res) => {
     }
 
     // Verificar si el rol existe
-    if (id_rol) {
-      const role = await Role.findByPk(id_rol);
+    if (id_role) {
+      const role = await Role.findByPk(id_role);
       if (!role) {
         return res.status(400).json({
           success: false,
@@ -158,20 +192,21 @@ const updateUser = async (req, res) => {
 
     // Actualizar usuario
     await user.update({
-      nombre_completo: nombre_completo || user.nombre_completo,
-      correo: correo || user.correo,
-      contrasena: contrasena || user.contrasena,
-      id_rol: id_rol || user.id_rol
+      nombre: nombre || user.nombre,
+      apellido: apellido || user.apellido,
+      email: email || user.email,
+      password: password || user.password,
+      id_role: id_role || user.id_role
     });
 
     // Obtener usuario actualizado con rol
     const updatedUser = await User.findByPk(id, {
       include: [{
         model: Role,
-        as: 'rol',
+        as: 'role',
         attributes: ['id', 'nombre']
       }],
-      attributes: { exclude: ['contrasena'] }
+      attributes: { exclude: ['password'] }
     });
 
     res.json({
@@ -289,10 +324,10 @@ const getDeletedUsers = async (req, res) => {
     const users = await User.findAll({
       include: [{
         model: Role,
-        as: 'rol',
+        as: 'role',
         attributes: ['id', 'nombre']
       }],
-      attributes: { exclude: ['contrasena'] },
+      attributes: { exclude: ['password'] },
       order: [['deleted_at', 'DESC']],
       paranoid: false,
       where: {
