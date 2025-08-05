@@ -1,0 +1,89 @@
+<div class="p-6">
+  <div class="flex items-center mb-6">
+    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-on-primary mr-3">
+      <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+    </div>
+    <div>
+      <h2 class="text-xl font-semibold">Agregar Nuevo Residuo</h2>
+      <p class="text-secondary">Completa la información del residuo</p>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="mb-4">
+    <div class="flex items-center p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+      <mat-icon class="text-red-500 mr-2" [svgIcon]="'heroicons_outline:exclamation-triangle'"></mat-icon>
+      <span class="text-red-700 dark:text-red-400 text-sm">{{ error }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="residuoForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Nombre -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Nombre del residuo *</mat-label>
+      <input
+        matInput
+        formControlName="nombre"
+        placeholder="Ej: Aceite usado"
+        required>
+      <mat-error *ngIf="residuoForm.get('nombre')?.hasError('required')">
+        El nombre es requerido
+      </mat-error>
+      <mat-error *ngIf="residuoForm.get('nombre')?.hasError('minlength')">
+        El nombre debe tener al menos 2 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Descripción -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Descripción</mat-label>
+      <textarea
+        matInput
+        formControlName="descripcion"
+        placeholder="Descripción detallada del residuo..."
+        rows="3">
+      </textarea>
+    </mat-form-field>
+
+    <!-- Código -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Código</mat-label>
+      <input
+        matInput
+        formControlName="codigo"
+        placeholder="Ej: RES-001">
+    </mat-form-field>
+
+    <!-- Peligroso -->
+    <div class="flex items-center">
+      <mat-checkbox
+        formControlName="peligroso"
+        color="warn">
+        Residuo peligroso
+      </mat-checkbox>
+      <span class="ml-2 text-sm text-secondary">
+        Marca esta opción si el residuo es considerado peligroso
+      </span>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end space-x-3 pt-4">
+      <button
+        type="button"
+        mat-stroked-button
+        (click)="onCancel()"
+        [disabled]="loading">
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        mat-flat-button
+        color="primary"
+        [disabled]="residuoForm.invalid || loading">
+        <mat-spinner *ngIf="loading" diameter="20" class="mr-2"></mat-spinner>
+        <span *ngIf="!loading">Crear Residuo</span>
+        <span *ngIf="loading">Creando...</span>
+      </button>
+    </div>
+  </form>
+</div> 

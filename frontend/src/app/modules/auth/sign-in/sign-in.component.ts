@@ -56,8 +56,8 @@ export class AuthSignInComponent implements OnInit
     {
         // Create the form
         this.signInForm = this._formBuilder.group({
-            email     : ['admin@ecomed.com', [Validators.required, Validators.email]],
-            password  : ['admin123', Validators.required],
+            correo     : ['admin@ecomed.com', [Validators.required, Validators.email]],
+            contrasena  : ['admin123', Validators.required],
             rememberMe: [false],
         });
     }
@@ -86,24 +86,29 @@ export class AuthSignInComponent implements OnInit
 
         // Prepare credentials
         const credentials: LoginRequest = {
-            email: this.signInForm.value.email,
-            password: this.signInForm.value.password
+            correo: this.signInForm.value.correo,
+            contrasena: this.signInForm.value.contrasena
         };
 
         // Sign in using Ecomed auth service
         this._ecomedAuthService.login(credentials)
             .subscribe({
                 next: (response) => {
+                    console.log('SignInComponent: Login successful', response);
+                    
                     // Set the redirect url.
                     // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
                     // to the correct page after a successful sign in. This way, that url can be set via
                     // routing file and we don't have to touch here.
                     const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
+                    console.log('SignInComponent: Redirecting to', redirectURL);
 
                     // Navigate to the redirect url
                     this._router.navigateByUrl(redirectURL);
                 },
                 error: (error) => {
+                    console.error('SignInComponent: Login error', error);
+                    
                     // Re-enable the form
                     this.signInForm.enable();
                     this.isLoading = false;

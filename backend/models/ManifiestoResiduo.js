@@ -1,70 +1,53 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
-
-const ManifiestoResiduo = sequelize.define('ManifiestoResiduo', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false
-  },
-  id_manifiesto: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'manifiestos',
-      key: 'id'
-    },
-    validate: {
-      notNull: true
+'use strict';
+const { Model } = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class ManifiestoResiduo extends Model {
+    static associate(models) {
+      ManifiestoResiduo.belongsTo(models.Manifiesto, {
+        foreignKey: 'id_manifiesto',
+        as: 'manifiesto'
+      });
+      ManifiestoResiduo.belongsTo(models.Residuo, {
+        foreignKey: 'id_residuo',
+        as: 'residuo'
+      });
     }
-  },
-  id_residuo: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'residuos',
-      key: 'id'
-    },
-    validate: {
-      notNull: true
-    }
-  },
-  cantidad: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false,
-    defaultValue: 0,
-    validate: {
-      min: 0
-    }
-  },
-  unidad_medida: {
-    type: DataTypes.STRING(20),
-    allowNull: false,
-    defaultValue: 'kg',
-    validate: {
-      notEmpty: true,
-      len: [1, 20]
-    }
-  },
-  deleted_at: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: null
   }
-}, {
-  tableName: 'manifiesto_residuos',
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
-  paranoid: true,
-  deletedAt: 'deleted_at',
-  indexes: [
-    {
-      unique: true,
-      fields: ['id_manifiesto', 'id_residuo']
+  ManifiestoResiduo.init({
+    cantidad: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
+    unidad: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    descripcion: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    id_manifiesto: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'manifiestos',
+        key: 'id'
+      }
+    },
+    id_residuo: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'residuos',
+        key: 'id'
+      }
     }
-  ]
-});
-
-module.exports = ManifiestoResiduo; 
+  }, {
+    sequelize,
+    modelName: 'ManifiestoResiduo',
+    tableName: 'manifiesto_residuos',
+    timestamps: true,
+    paranoid: true
+  });
+  return ManifiestoResiduo;
+}; 

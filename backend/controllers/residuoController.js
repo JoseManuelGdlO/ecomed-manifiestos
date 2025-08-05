@@ -1,16 +1,58 @@
 const { Residuo } = require('../models');
+const { Op } = require('sequelize');
 
 // Obtener todos los residuos (solo activos)
 const getAllResiduos = async (req, res) => {
   try {
+    const { page = 1, limit = 10, sort = 'id', order = 'asc', search = '' } = req.query;
+    
+    // Construir condiciones de búsqueda
+    let whereClause = {};
+    
+    // Agregar búsqueda si se proporciona
+    if (search && search.trim() !== '') {
+      whereClause = {
+        [Op.or]: [
+          { nombre: { [Op.like]: `%${search}%` } },
+          { codigo: { [Op.like]: `%${search}%` } },
+          { descripcion: { [Op.like]: `%${search}%` } }
+        ]
+      };
+    }
+    
+    // Calcular offset para paginación
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    
+    // Construir ordenamiento
+    let orderClause = [[sort, order.toUpperCase()]];
+    
+    // Si el campo de ordenamiento es 'created_at', usar el nombre correcto de la columna
+    if (sort === 'created_at') {
+      orderClause = [['created_at', order.toUpperCase()]];
+    }
+    
+    // Obtener total de registros para paginación
+    const total = await Residuo.count({ 
+      where: whereClause,
+      paranoid: true 
+    });
+    
+    // Obtener residuos con paginación, búsqueda y ordenamiento
     const residuos = await Residuo.findAll({
-      order: [['created_at', 'DESC']],
-      paranoid: true // Solo residuos no eliminados
+      where: whereClause,
+      order: orderClause,
+      limit: parseInt(limit),
+      offset: offset,
+      paranoid: true
     });
 
     res.json({
       success: true,
-      data: residuos
+      data: residuos,
+      total: total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(total / parseInt(limit))
     });
 
   } catch (error) {
@@ -55,9 +97,9 @@ const getResiduoById = async (req, res) => {
 // Crear nuevo residuo
 const createResiduo = async (req, res) => {
   try {
-    const { nombre, descripcion } = req.body;
+    const { nombre, descripcion, codigo, peligroso } = req.body;
 
-    // Verificar si el residuo ya existe
+    // Verificar si el residuo ya existe por nombre
     const existingResiduo = await Residuo.findOne({ where: { nombre } });
     if (existingResiduo) {
       return res.status(400).json({
@@ -66,10 +108,23 @@ const createResiduo = async (req, res) => {
       });
     }
 
+    // Verificar si el código ya existe (si se proporciona)
+    if (codigo) {
+      const existingCodigo = await Residuo.findOne({ where: { codigo } });
+      if (existingCodigo) {
+        return res.status(400).json({
+          success: false,
+          message: 'Ya existe un residuo con ese código'
+        });
+      }
+    }
+
     // Crear nuevo residuo
     const newResiduo = await Residuo.create({
       nombre,
-      descripcion
+      descripcion: descripcion || null,
+      codigo: codigo || null,
+      peligroso: peligroso || false
     });
 
     res.status(201).json({
@@ -91,7 +146,7 @@ const createResiduo = async (req, res) => {
 const updateResiduo = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, descripcion } = req.body;
+    const { nombre, descripcion, codigo, peligroso } = req.body;
 
     const residuo = await Residuo.findByPk(id, { paranoid: true });
     if (!residuo) {
@@ -112,10 +167,23 @@ const updateResiduo = async (req, res) => {
       }
     }
 
+    // Verificar si el código ya existe en otro residuo (si se proporciona)
+    if (codigo && codigo !== residuo.codigo) {
+      const existingCodigo = await Residuo.findOne({ where: { codigo } });
+      if (existingCodigo) {
+        return res.status(400).json({
+          success: false,
+          message: 'Ya existe un residuo con ese código'
+        });
+      }
+    }
+
     // Actualizar residuo
     await residuo.update({
       nombre: nombre || residuo.nombre,
-      descripcion: descripcion !== undefined ? descripcion : residuo.descripcion
+      descripcion: descripcion !== undefined ? descripcion : residuo.descripcion,
+      codigo: codigo !== undefined ? codigo : residuo.codigo,
+      peligroso: peligroso !== undefined ? peligroso : residuo.peligroso
     });
 
     res.json({
@@ -235,7 +303,7 @@ const getDeletedResiduos = async (req, res) => {
       paranoid: false,
       where: {
         deleted_at: {
-          [require('sequelize').Op.ne]: null
+          [Op.ne]: null
         }
       }
     });

@@ -1,0 +1,83 @@
+<div class="p-6">
+  <div class="flex items-center mb-6">
+    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-red-500 text-white mr-3">
+      <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+    </div>
+    <div>
+      <h2 class="text-xl font-semibold">Eliminar Transportista</h2>
+      <p class="text-secondary">¿Estás seguro de que quieres eliminar este transportista?</p>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="mb-4">
+    <div class="flex items-center p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+      <mat-icon class="text-red-500 mr-2" [svgIcon]="'heroicons_outline:exclamation-triangle'"></mat-icon>
+      <span class="text-red-700 dark:text-red-400 text-sm">{{ error }}</span>
+    </div>
+  </div>
+
+  <!-- Transportista Info -->
+  <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6">
+    <div class="space-y-2">
+      <div class="flex items-center">
+        <span class="font-medium text-gray-700 dark:text-gray-300 w-24">Razón Social:</span>
+        <span class="text-gray-900 dark:text-white">{{ data.razon_social }}</span>
+      </div>
+      <div class="flex items-center" *ngIf="data.placa">
+        <span class="font-medium text-gray-700 dark:text-gray-300 w-24">Placa:</span>
+        <span class="font-mono text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+          {{ data.placa }}
+        </span>
+      </div>
+      <div class="flex items-center" *ngIf="data.telefono">
+        <span class="font-medium text-gray-700 dark:text-gray-300 w-24">Teléfono:</span>
+        <span class="text-gray-900 dark:text-white">{{ data.telefono }}</span>
+      </div>
+      <div class="flex items-center" *ngIf="data.correo_electronico">
+        <span class="font-medium text-gray-700 dark:text-gray-300 w-24">Correo:</span>
+        <span class="text-gray-900 dark:text-white">{{ data.correo_electronico }}</span>
+      </div>
+      <div class="flex items-center" *ngIf="data.autorizacion_semarnat">
+        <span class="font-medium text-gray-700 dark:text-gray-300 w-24">SEMARNAT:</span>
+        <span class="text-gray-900 dark:text-white">{{ data.autorizacion_semarnat }}</span>
+      </div>
+      <div class="flex items-center" *ngIf="data.permiso_sct">
+        <span class="font-medium text-gray-700 dark:text-gray-300 w-24">Permiso SCT:</span>
+        <span class="text-gray-900 dark:text-white">{{ data.permiso_sct }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Warning Message -->
+  <div class="mb-6">
+    <div class="flex items-start p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+      <mat-icon class="text-orange-500 mr-2 mt-0.5" [svgIcon]="'heroicons_outline:exclamation-triangle'"></mat-icon>
+      <div class="text-orange-700 dark:text-orange-400 text-sm">
+        <p class="font-medium mb-1">Esta acción no se puede deshacer</p>
+        <p>El transportista será eliminado permanentemente del sistema.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex justify-end space-x-3">
+    <button
+      type="button"
+      mat-stroked-button
+      (click)="onCancel()"
+      [disabled]="loading">
+      Cancelar
+    </button>
+    <button
+      type="button"
+      mat-flat-button
+      color="warn"
+      (click)="onConfirm()"
+      [disabled]="loading">
+      <mat-spinner *ngIf="loading" diameter="20" class="mr-2"></mat-spinner>
+      <span *ngIf="!loading">Eliminar Transportista</span>
+      <span *ngIf="loading">Eliminando...</span>
+    </button>
+  </div>
+</div> 

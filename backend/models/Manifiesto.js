@@ -1,45 +1,55 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
-
-const Manifiesto = sequelize.define('Manifiesto', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false
-  },
-  numero_libro: {
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    unique: true,
-    validate: {
-      notEmpty: true,
-      len: [1, 50]
+'use strict';
+const { Model } = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Manifiesto extends Model {
+    static associate(models) {
+      Manifiesto.belongsTo(models.Cliente, {
+        foreignKey: 'id_cliente',
+        as: 'cliente'
+      });
+      Manifiesto.hasMany(models.ManifiestoResiduo, {
+        foreignKey: 'id_manifiesto',
+        as: 'manifiestoResiduos'
+      });
+      Manifiesto.hasMany(models.ManifiestoEstado, {
+        foreignKey: 'id_manifiesto',
+        as: 'manifiestoEstados'
+      });
     }
-  },
-  id_cliente: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'clientes',
-      key: 'id'
-    },
-    validate: {
-      notNull: true
-    }
-  },
-  deleted_at: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: null
   }
-}, {
-  tableName: 'manifiestos',
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
-  paranoid: true,
-  deletedAt: 'deleted_at'
-});
-
-module.exports = Manifiesto; 
+  Manifiesto.init({
+    numero_libro: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    },
+    fecha_creacion: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    fecha_transporte: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    observaciones: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    id_cliente: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'clientes',
+        key: 'id'
+      }
+    }
+  }, {
+    sequelize,
+    modelName: 'Manifiesto',
+    tableName: 'manifiestos',
+    timestamps: true,
+    paranoid: true
+  });
+  return Manifiesto;
+}; 

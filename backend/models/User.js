@@ -1,78 +1,71 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
+'use strict';
+const { Model } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
-const User = sequelize.define('User', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false
-  },
-  nombre_completo: {
-    type: DataTypes.STRING(100),
-    allowNull: false,
-    validate: {
-      notEmpty: true,
-      len: [2, 100]
+module.exports = (sequelize, DataTypes) => {
+  class User extends Model {
+    static associate(models) {
+      User.belongsTo(models.Role, {
+        foreignKey: 'id_role',
+        as: 'role'
+      });
     }
-  },
-  correo: {
-    type: DataTypes.STRING(100),
-    allowNull: false,
-    unique: true,
-    validate: {
-      isEmail: true,
-      notEmpty: true
+
+    async comparePassword(candidatePassword) {
+      return bcrypt.compare(candidatePassword, this.password);
     }
-  },
-  contrasena: {
-    type: DataTypes.STRING(255),
-    allowNull: false,
-    validate: {
-      notEmpty: true,
-      len: [6, 255]
-    }
-  },
-  id_rol: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'roles',
-      key: 'id'
-    }
-  },
-  deleted_at: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: null
   }
-}, {
-  tableName: 'usuarios',
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
-  paranoid: true,
-  deletedAt: 'deleted_at',
-  hooks: {
-    beforeCreate: async (user) => {
-      if (user.contrasena) {
-        const salt = await bcrypt.genSalt(10);
-        user.contrasena = await bcrypt.hash(user.contrasena, salt);
+  
+  User.init({
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true
       }
     },
-    beforeUpdate: async (user) => {
-      if (user.changed('contrasena')) {
-        const salt = await bcrypt.genSalt(10);
-        user.contrasena = await bcrypt.hash(user.contrasena, salt);
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    apellido: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    id_role: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'roles',
+        key: 'id'
       }
     }
-  }
-});
-
-// Método para comparar contraseñas
-User.prototype.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.contrasena);
-};
-
-module.exports = User; 
+  }, {
+    sequelize,
+    modelName: 'User',
+    tableName: 'users',
+    timestamps: true,
+    paranoid: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    deletedAt: 'deleted_at',
+    hooks: {
+      beforeCreate: async (user) => {
+        if (user.password) {
+          user.password = await bcrypt.hash(user.password, 10);
+        }
+      },
+      beforeUpdate: async (user) => {
+        if (user.changed('password')) {
+          user.password = await bcrypt.hash(user.password, 10);
+        }
+      }
+    }
+  });
+  return User;
+}; 

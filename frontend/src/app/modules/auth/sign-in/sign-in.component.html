@@ -8,13 +8,6 @@
 
             <!-- Title -->
             <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">Iniciar Sesión</div>
-            <div class="flex items-baseline mt-0.5 font-medium">
-                <div>¿No tienes una cuenta?</div>
-                <a
-                    class="ml-1 text-primary-500 hover:underline"
-                    [routerLink]="['/sign-up']">Regístrate
-                </a>
-            </div>
 
             <!-- Alert -->
             <fuse-alert
@@ -46,13 +39,13 @@
                 <mat-form-field class="w-full">
                     <mat-label>Correo electrónico</mat-label>
                     <input
-                        id="email"
+                        id="correo"
                         matInput
-                        [formControlName]="'email'">
-                    <mat-error *ngIf="signInForm.get('email').hasError('required')">
+                        [formControlName]="'correo'">
+                    <mat-error *ngIf="signInForm.get('correo').hasError('required')">
                         El correo electrónico es requerido
                     </mat-error>
-                    <mat-error *ngIf="signInForm.get('email').hasError('email')">
+                    <mat-error *ngIf="signInForm.get('correo').hasError('email')">
                         Por favor ingresa un correo electrónico válido
                     </mat-error>
                 </mat-form-field>
@@ -61,10 +54,10 @@
                 <mat-form-field class="w-full">
                     <mat-label>Contraseña</mat-label>
                     <input
-                        id="password"
+                        id="contrasena"
                         matInput
                         type="password"
-                        [formControlName]="'password'"
+                        [formControlName]="'contrasena'"
                         #passwordField>
                     <button
                         mat-icon-button
@@ -93,10 +86,6 @@
                         [formControlName]="'rememberMe'">
                         Recordarme
                     </mat-checkbox>
-                    <a
-                        class="text-md font-medium text-primary-500 hover:underline"
-                        [routerLink]="['/forgot-password']">¿Olvidaste tu contraseña?
-                    </a>
                 </div>
 
                 <!-- Submit button -->
@@ -114,41 +103,6 @@
                         [diameter]="24"
                         [mode]="'indeterminate'"></mat-progress-spinner>
                 </button>
-
-                <!-- Separator -->
-                <div class="flex items-center mt-8">
-                    <div class="flex-auto mt-px border-t"></div>
-                    <div class="mx-2 text-secondary">O continúa con</div>
-                    <div class="flex-auto mt-px border-t"></div>
-                </div>
-
-                <!-- Single sign-on buttons -->
-                <div class="flex items-center mt-8 space-x-4">
-                    <button
-                        class="flex-auto"
-                        type="button"
-                        mat-stroked-button>
-                        <mat-icon
-                            class="icon-size-5"
-                            [svgIcon]="'feather:facebook'"></mat-icon>
-                    </button>
-                    <button
-                        class="flex-auto"
-                        type="button"
-                        mat-stroked-button>
-                        <mat-icon
-                            class="icon-size-5"
-                            [svgIcon]="'feather:twitter'"></mat-icon>
-                    </button>
-                    <button
-                        class="flex-auto"
-                        type="button"
-                        mat-stroked-button>
-                        <mat-icon
-                            class="icon-size-5"
-                            [svgIcon]="'feather:github'"></mat-icon>
-                    </button>
-                </div>
             </form>
         </div>
     </div>

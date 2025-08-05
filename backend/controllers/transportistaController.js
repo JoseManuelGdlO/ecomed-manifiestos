@@ -1,16 +1,59 @@
 const { Transportista } = require('../models');
+const { Op } = require('sequelize');
 
 // Obtener todos los transportistas (solo activos)
 const getAllTransportistas = async (req, res) => {
   try {
+    const { page = 1, limit = 10, sort = 'id', order = 'asc', search = '' } = req.query;
+    
+    // Construir condiciones de búsqueda
+    let whereClause = {};
+    
+    // Agregar búsqueda si se proporciona
+    if (search && search.trim() !== '') {
+      whereClause = {
+        [Op.or]: [
+          { razon_social: { [Op.like]: `%${search}%` } },
+          { placa: { [Op.like]: `%${search}%` } },
+          { autorizacion_semarnat: { [Op.like]: `%${search}%` } },
+          { permiso_sct: { [Op.like]: `%${search}%` } }
+        ]
+      };
+    }
+    
+    // Calcular offset para paginación
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    
+    // Construir ordenamiento
+    let orderClause = [[sort, order.toUpperCase()]];
+    
+    // Si el campo de ordenamiento es 'created_at', usar el nombre correcto de la columna
+    if (sort === 'created_at') {
+      orderClause = [['created_at', order.toUpperCase()]];
+    }
+    
+    // Obtener total de registros para paginación
+    const total = await Transportista.count({ 
+      where: whereClause,
+      paranoid: true 
+    });
+    
+    // Obtener transportistas con paginación, búsqueda y ordenamiento
     const transportistas = await Transportista.findAll({
-      order: [['created_at', 'DESC']],
-      paranoid: true // Solo transportistas no eliminados
+      where: whereClause,
+      order: orderClause,
+      limit: parseInt(limit),
+      offset: offset,
+      paranoid: true
     });
 
     res.json({
       success: true,
-      data: transportistas
+      data: transportistas,
+      total: total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(total / parseInt(limit))
     });
 
   } catch (error) {

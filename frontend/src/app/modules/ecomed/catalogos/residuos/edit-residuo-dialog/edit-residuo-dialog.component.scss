@@ -1,0 +1,17 @@
+// Add any custom styles for the dialog component here
+.mat-mdc-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.mat-mdc-dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+// Dark mode support
+.dark {
+  .mat-mdc-dialog-actions {
+    border-top-color: rgba(255, 255, 255, 0.12);
+  }
+} 

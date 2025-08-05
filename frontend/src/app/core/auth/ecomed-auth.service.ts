@@ -1,16 +1,21 @@
 import { Injectable } from '@angular/core';
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, throwError, of, BehaviorSubject } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { ApiService } from '../api/api.service';
 import { LoginRequest, LoginResponse, User, AuthError } from '../models/auth.model';
+import { UserService } from '../user/user.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EcomedAuthService {
   private currentUser: User | null = null;
+  private userChangeSubject = new BehaviorSubject<User | null>(null);
 
-  constructor(private apiService: ApiService) {
+  constructor(
+    private apiService: ApiService,
+    private userService: UserService
+  ) {
     // Try to restore user from localStorage on service initialization
     this.restoreUserFromStorage();
   }
@@ -19,8 +24,11 @@ export class EcomedAuthService {
    * Login user
    */
   login(credentials: LoginRequest): Observable<LoginResponse> {
+    console.log('EcomedAuthService: Login attempt', credentials);
+    
     return this.apiService.post<LoginResponse>('/auth/login', credentials).pipe(
       tap(response => {
+        console.log('EcomedAuthService: Login response', response);
         if (response.success) {
           // Store token
           localStorage.setItem('accessToken', response.data.token);
@@ -28,10 +36,18 @@ export class EcomedAuthService {
           // Store user data
           this.currentUser = response.data.user;
           localStorage.setItem('currentUser', JSON.stringify(response.data.user));
+          
+                     // Update UserService for layout compatibility
+           this.updateUserService(response.data.user);
+           
+           // Emit user change event
+           this.userChangeSubject.next(response.data.user);
+           
+           console.log('EcomedAuthService: User stored', this.currentUser);
         }
       }),
       catchError(error => {
-        console.error('Login error:', error);
+        console.error('EcomedAuthService: Login error:', error);
         return throwError(() => this.handleAuthError(error));
       })
     );
@@ -46,15 +62,20 @@ export class EcomedAuthService {
     localStorage.removeItem('currentUser');
     this.currentUser = null;
     
+    // Clear UserService
+    this.userService.user = null;
+    
     return of(true);
   }
 
   /**
    * Check if user is authenticated
    */
-  isAuthenticated(): boolean {
+  isAuthenticated(): Observable<boolean> {
     const token = localStorage.getItem('accessToken');
-    return !!token && !!this.currentUser;
+    const isAuth = !!token && !!this.currentUser;
+    console.log('EcomedAuthService: isAuthenticated check', { token: !!token, currentUser: !!this.currentUser, isAuth });
+    return of(isAuth);
   }
 
   /**
@@ -72,10 +93,17 @@ export class EcomedAuthService {
   }
 
   /**
+   * Get observable for user changes
+   */
+  getUserChanges(): Observable<User | null> {
+    return this.userChangeSubject.asObservable();
+  }
+
+  /**
    * Check if user has specific role
    */
   hasRole(roleName: string): boolean {
-    return this.currentUser?.role?.nombre === roleName;
+    return this.currentUser?.rol?.nombre === roleName;
   }
 
   /**
@@ -89,7 +117,7 @@ export class EcomedAuthService {
    * Check if user has specific permission
    */
   hasPermission(permission: string): boolean {
-    return this.currentUser?.role?.permisos?.includes(permission) || false;
+    return this.currentUser?.rol?.permisos?.includes(permission) || false;
   }
 
   /**
@@ -119,7 +147,11 @@ export class EcomedAuthService {
     const userStr = localStorage.getItem('currentUser');
     if (userStr) {
       try {
-        this.currentUser = JSON.parse(userStr);
+                 this.currentUser = JSON.parse(userStr);
+         // Also update UserService for layout compatibility
+         this.updateUserService(this.currentUser);
+         // Emit user change event
+         this.userChangeSubject.next(this.currentUser);
       } catch (error) {
         console.error('Error parsing stored user data:', error);
         localStorage.removeItem('currentUser');
@@ -157,5 +189,20 @@ export class EcomedAuthService {
       success: false,
       message: 'Error de autenticación'
     };
+  }
+
+  /**
+   * Update UserService with our user data
+   */
+  private updateUserService(user: User): void {
+    const fuseUser = {
+      id: user.id.toString(),
+      name: user.nombre_completo,
+      email: user.correo,
+      avatar: undefined, // No avatar for now
+      status: 'online'
+    };
+    
+    this.userService.user = fuseUser;
   }
 } 

@@ -2,6 +2,7 @@ import { Route } from '@angular/router';
 import { initialDataResolver } from 'app/app.resolvers';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
+import { RoleGuard } from 'app/core/auth/guards/role.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
 
 // @formatter:off
@@ -9,15 +10,15 @@ import { LayoutComponent } from 'app/layout/layout.component';
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 export const appRoutes: Route[] = [
 
-    // Redirect empty path to '/dashboards/project'
-    {path: '', pathMatch : 'full', redirectTo: 'dashboards/project'},
+    // Redirect empty path to '/clientes'
+    {path: '', pathMatch : 'full', redirectTo: 'clientes'},
 
-    // Redirect signed-in user to the '/dashboards/project'
+    // Redirect signed-in user to the '/clientes'
     //
     // After the user signs in, the sign-in page will redirect the user to the 'signed-in-redirect'
     // path. Below is another redirection for that path to redirect the user to the desired
     // location. This is a small convenience to keep all main routes together here on this file.
-    {path: 'signed-in-redirect', pathMatch : 'full', redirectTo: 'dashboards/project'},
+    {path: 'signed-in-redirect', pathMatch : 'full', redirectTo: 'clientes'},
 
     // Auth routes for guests
     {
@@ -196,6 +197,34 @@ export const appRoutes: Route[] = [
                 // Guides
                 {path: 'guides', loadChildren: () => import('app/modules/admin/docs/guides/guides.routes')}
             ]},
+
+            // Ecomed Routes - Clientes (All roles)
+            {path: 'clientes', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'clientes/nuevo', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'clientes/carga-masiva', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+
+            // Ecomed Routes - Manifiestos (All roles)
+            {path: 'manifiestos', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'manifiestos/nuevo', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'manifiestos/estados', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+
+            // Ecomed Routes - Reportes (All roles)
+            {path: 'reportes', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'reportes/manifiestos', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'reportes/clientes', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'reportes/estadisticas', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+
+            // Ecomed Routes - Catálogos (Admin only)
+            {path: 'catalogos', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'catalogos/residuos', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/ecomed/catalogos/residuos/residuos.routes')},
+            {path: 'catalogos/transportistas', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/ecomed/catalogos/transportistas/transportistas.routes')},
+            {path: 'catalogos/destinos', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/ecomed/catalogos/destinos/destinos.routes')},
+            {path: 'catalogos/vehiculos', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+
+            // Ecomed Routes - Usuarios (Admin only)
+            {path: 'usuarios', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'usuarios/nuevo', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'usuarios/roles', canActivate: [RoleGuard(['admin'])], loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
 
             // 404 & Catch all
             {path: '404-not-found', pathMatch: 'full', loadChildren: () => import('app/modules/admin/pages/error/error-404/error-404.routes')},

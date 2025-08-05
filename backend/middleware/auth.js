@@ -13,10 +13,11 @@ const auth = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
     const user = await User.findByPk(decoded.id, {
       include: [{
-        model: require('../models/Role'),
-        as: 'rol',
+        model: require('../models').Role,
+        as: 'role',
         attributes: ['id', 'nombre']
       }]
     });
@@ -49,7 +50,7 @@ const checkRole = (roles) => {
       });
     }
 
-    if (!roles.includes(req.user.rol.nombre)) {
+    if (!roles.includes(req.user.role.nombre)) {
       return res.status(403).json({
         success: false,
         message: 'No tienes permisos para acceder a este recurso'

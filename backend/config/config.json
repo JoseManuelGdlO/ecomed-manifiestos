@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "ecomed_user",
+    "password": "ecomed123",
+    "database": "ecomed_db",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "ecomed_user",
+    "password": "ecomed123",
+    "database": "ecomed_db",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "ecomed_user",
+    "password": "ecomed123",
+    "database": "ecomed_db",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "dialect": "mysql"
+  }
+}

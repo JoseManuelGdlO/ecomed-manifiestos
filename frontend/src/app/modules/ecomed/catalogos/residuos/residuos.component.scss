@@ -1,0 +1,65 @@
+// Custom styles for the residuos component
+.mat-mdc-table {
+  .mat-mdc-header-cell {
+    font-weight: 600;
+    color: var(--fuse-primary);
+    border-bottom: 2px solid var(--fuse-border);
+  }
+
+  .mat-mdc-cell {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--fuse-border);
+  }
+
+  .mat-mdc-row:hover {
+    background-color: var(--fuse-hover);
+  }
+}
+
+// Custom chip styles
+.mat-mdc-chip.mat-mdc-chip-selected {
+  &.mat-warn {
+    background-color: #fef2f2;
+    color: #dc2626;
+  }
+
+  &.mat-accent {
+    background-color: #fef3c7;
+    color: #d97706;
+  }
+
+  &.mat-primary {
+    background-color: #dbeafe;
+    color: #2563eb;
+  }
+}
+
+// Dark mode adjustments
+.dark {
+  .mat-mdc-chip.mat-mdc-chip-selected {
+    &.mat-warn {
+      background-color: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    &.mat-accent {
+      background-color: #78350f;
+      color: #fbbf24;
+    }
+
+    &.mat-primary {
+      background-color: #1e3a8a;
+      color: #93c5fd;
+    }
+  }
+}
+
+// Responsive table
+@media (max-width: 768px) {
+  .mat-mdc-table {
+    .mat-mdc-cell {
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+  }
+} 

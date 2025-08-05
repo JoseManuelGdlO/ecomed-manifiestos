@@ -1,0 +1,146 @@
+<mat-dialog-content class="p-6">
+  <div class="flex items-center mb-6">
+    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-on-primary mr-3">
+      <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+    </div>
+    <div>
+      <h2 class="text-xl font-semibold">Agregar Nuevo Destino</h2>
+      <p class="text-secondary">Completa la información del destino</p>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="mb-4">
+    <div class="flex items-center p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+      <mat-icon class="text-red-500 mr-2" [svgIcon]="'heroicons_outline:exclamation-triangle'"></mat-icon>
+      <span class="text-red-700 dark:text-red-400 text-sm">{{ error }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="destinoForm" class="space-y-4">
+    <!-- Información General -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Nombre *</mat-label>
+        <input matInput formControlName="nombre" placeholder="Ej: Centro de Disposición Final" required>
+        <mat-error *ngIf="destinoForm.get('nombre')?.hasError('required')">El nombre es requerido</mat-error>
+        <mat-error *ngIf="destinoForm.get('nombre')?.hasError('minlength')">El nombre debe tener al menos 2 caracteres</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Razón Social *</mat-label>
+        <input matInput formControlName="razon_social" placeholder="Ej: Destinos Ecológicos S.A. de C.V." required>
+        <mat-error *ngIf="destinoForm.get('razon_social')?.hasError('required')">La razón social es requerida</mat-error>
+        <mat-error *ngIf="destinoForm.get('razon_social')?.hasError('minlength')">La razón social debe tener al menos 2 caracteres</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telefono" placeholder="Ej: 55-1234-5678">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Correo Electrónico</mat-label>
+        <input matInput formControlName="correo_electronico" placeholder="Ej: contacto@destinos.com" type="email">
+        <mat-error *ngIf="destinoForm.get('correo_electronico')?.hasError('email')">Correo electrónico inválido</mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Autorización -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Autorización SEMARNAT</mat-label>
+        <input matInput formControlName="autorizacion_semarnat" placeholder="Ej: SEM-2024-001">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput formControlName="descripcion" placeholder="Descripción del destino" rows="2"></textarea>
+      </mat-form-field>
+    </div>
+
+    <!-- Información del Encargado -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Nombre del Encargado</mat-label>
+        <input matInput formControlName="nombre_encargado" placeholder="Ej: Juan Pérez">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Cargo del Encargado</mat-label>
+        <input matInput formControlName="cargo_encargado" placeholder="Ej: Gerente de Operaciones">
+      </mat-form-field>
+    </div>
+
+    <!-- Dirección -->
+    <div class="space-y-4">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Dirección</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Calle</mat-label>
+          <input matInput formControlName="calle" placeholder="Ej: Av. Industrial">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Número Exterior</mat-label>
+          <input matInput formControlName="num_ext" placeholder="Ej: 123">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Número Interior</mat-label>
+          <input matInput formControlName="num_int" placeholder="Ej: A">
+        </mat-form-field>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Colonia</mat-label>
+          <input matInput formControlName="colonia" placeholder="Ej: Industrial">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Delegación/Municipio</mat-label>
+          <input matInput formControlName="delegacion" placeholder="Ej: Iztapalapa">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Estado</mat-label>
+          <input matInput formControlName="estado" placeholder="Ej: Ciudad de México">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Código Postal</mat-label>
+          <input matInput formControlName="codigo_postal" placeholder="Ej: 09000">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Observaciones -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Observaciones</mat-label>
+      <textarea matInput formControlName="observaciones" placeholder="Observaciones adicionales" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    type="button"
+    mat-stroked-button
+    (click)="onCancel()"
+    [disabled]="loading">
+    Cancelar
+  </button>
+  <button
+    type="button"
+    mat-flat-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="destinoForm.invalid || loading">
+    <mat-spinner *ngIf="loading" diameter="20" class="mr-2"></mat-spinner>
+    <span *ngIf="!loading">Crear Destino</span>
+    <span *ngIf="loading">Creando...</span>
+  </button>
+</mat-dialog-actions> 

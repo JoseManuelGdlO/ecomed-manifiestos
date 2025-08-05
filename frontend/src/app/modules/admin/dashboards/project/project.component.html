@@ -12,28 +12,15 @@
                             src="assets/images/avatars/brian-hughes.jpg">
                     </div>
                     <div class="flex flex-col min-w-0 ml-4">
-                        <ng-container *transloco="let t">
-                            <div class="text-2xl md:text-5xl font-semibold tracking-tight leading-7 md:leading-snug truncate">{{t('welcome-back')}}, Brian!</div>
-                        </ng-container>
+                        <div class="text-2xl md:text-5xl font-semibold tracking-tight leading-7 md:leading-snug truncate">{{pageTitle}}</div>
                         <div class="flex items-center">
-                            <mat-icon
-                                class="icon-size-5"
-                                [svgIcon]="'heroicons_solid:bell'"></mat-icon>
-                            <div class="ml-1.5 leading-6 truncate text-secondary">You have 2 new messages and 15 new tasks</div>
+                            <div class="ml-1.5 leading-6 truncate text-secondary">{{pageDescription}}</div>
                         </div>
                     </div>
                 </div>
                 <!-- Actions -->
                 <div class="flex items-center mt-6 sm:mt-0 sm:ml-2 space-x-3">
-                    <button
-                        class="bg-accent"
-                        mat-flat-button
-                        [color]="'accent'">
-                        <mat-icon
-                            class="icon-size-5"
-                            [svgIcon]="'heroicons_solid:envelope'"></mat-icon>
-                        <span class="ml-2">Messages</span>
-                    </button>
+
                     <button
                         mat-flat-button
                         [color]="'primary'">
@@ -44,14 +31,14 @@
                     </button>
                 </div>
             </div>
-            <!-- Project selector -->
+            <!-- Section selector -->
             <div
                 class="relative flex self-start pt-2 pb-1 pl-5 pr-4 cursor-pointer overflow-hidden rounded-t-xl border border-b-0 bg-default"
                 matRipple
-                [matMenuTriggerFor]="projectsMenu">
+                [matMenuTriggerFor]="sectionsMenu">
                 <div class="flex items-center">
                     <div class="overflow-hidden">
-                        <div class="font-medium leading-6 truncate">{{selectedProject}}</div>
+                        <div class="font-medium leading-6 truncate">{{pageTitle}}</div>
                     </div>
                     <div class="flex items-center justify-center pl-2">
                         <mat-icon
@@ -60,23 +47,27 @@
                     </div>
                 </div>
                 <mat-menu
-                    #projectsMenu="matMenu"
+                    #sectionsMenu="matMenu"
                     [xPosition]="'before'">
                     <button
                         mat-menu-item
-                        (click)="selectedProject='ACME Corp. Backend App'">ACME Corp. Backend App
+                        routerLink="/clientes">Gestión de Clientes
                     </button>
                     <button
                         mat-menu-item
-                        (click)="selectedProject='ACME Corp. Frontend App'">ACME Corp. Frontend App
+                        routerLink="/manifiestos">Gestión de Manifiestos
                     </button>
                     <button
                         mat-menu-item
-                        (click)="selectedProject='Creapond'">Creapond
+                        routerLink="/reportes">Reportes
                     </button>
                     <button
                         mat-menu-item
-                        (click)="selectedProject='Withinpixels'">Withinpixels
+                        routerLink="/catalogos">Catálogos
+                    </button>
+                    <button
+                        mat-menu-item
+                        routerLink="/usuarios">Gestión de Usuarios
                     </button>
                 </mat-menu>
             </div>

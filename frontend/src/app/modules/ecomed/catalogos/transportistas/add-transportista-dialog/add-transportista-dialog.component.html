@@ -1,0 +1,139 @@
+<mat-dialog-content class="p-6">
+  <div class="flex items-center mb-6">
+    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-on-primary mr-3">
+      <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+    </div>
+    <div>
+      <h2 class="text-xl font-semibold">Agregar Nuevo Transportista</h2>
+      <p class="text-secondary">Completa la información del transportista</p>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="mb-4">
+    <div class="flex items-center p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+      <mat-icon class="text-red-500 mr-2" [svgIcon]="'heroicons_outline:exclamation-triangle'"></mat-icon>
+      <span class="text-red-700 dark:text-red-400 text-sm">{{ error }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="transportistaForm" class="space-y-4">
+    <!-- Información General -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Razón Social *</mat-label>
+        <input matInput formControlName="razon_social" placeholder="Ej: Transportes ABC S.A. de C.V." required>
+        <mat-error *ngIf="transportistaForm.get('razon_social')?.hasError('required')">La razón social es requerida</mat-error>
+        <mat-error *ngIf="transportistaForm.get('razon_social')?.hasError('minlength')">La razón social debe tener al menos 2 caracteres</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telefono" placeholder="Ej: 55-1234-5678">
+      </mat-form-field>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Correo Electrónico</mat-label>
+        <input matInput formControlName="correo_electronico" placeholder="Ej: contacto@transportesabc.com" type="email">
+        <mat-error *ngIf="transportistaForm.get('correo_electronico')?.hasError('email')">Correo electrónico inválido</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Placa</mat-label>
+        <input matInput formControlName="placa" placeholder="Ej: ABC-123">
+      </mat-form-field>
+    </div>
+
+    <!-- Información del Vehículo -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Tipo de Vehículo</mat-label>
+        <input matInput formControlName="tipo_vehiculo" placeholder="Ej: Camión de carga">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Ruta de la Empresa</mat-label>
+        <input matInput formControlName="ruta_empresa" placeholder="Ej: CDMX - Monterrey">
+      </mat-form-field>
+    </div>
+
+    <!-- Autorizaciones -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Autorización SEMARNAT</mat-label>
+        <input matInput formControlName="autorizacion_semarnat" placeholder="Ej: SEM-2024-001">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Permiso SCT</mat-label>
+        <input matInput formControlName="permiso_sct" placeholder="Ej: SCT-2024-001">
+      </mat-form-field>
+    </div>
+
+    <!-- Dirección -->
+    <div class="space-y-4">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Dirección</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Calle</mat-label>
+          <input matInput formControlName="calle" placeholder="Ej: Av. Insurgentes">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Número Exterior</mat-label>
+          <input matInput formControlName="num_ext" placeholder="Ej: 123">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Número Interior</mat-label>
+          <input matInput formControlName="num_int" placeholder="Ej: A">
+        </mat-form-field>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Colonia</mat-label>
+          <input matInput formControlName="colonia" placeholder="Ej: Centro">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Delegación/Municipio</mat-label>
+          <input matInput formControlName="delegacion" placeholder="Ej: Cuauhtémoc">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Estado</mat-label>
+          <input matInput formControlName="estado" placeholder="Ej: Ciudad de México">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Código Postal</mat-label>
+          <input matInput formControlName="codigo_postal" placeholder="Ej: 06000">
+        </mat-form-field>
+      </div>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    type="button"
+    mat-stroked-button
+    (click)="onCancel()"
+    [disabled]="loading">
+    Cancelar
+  </button>
+  <button
+    type="button"
+    mat-flat-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="transportistaForm.invalid || loading">
+    <mat-spinner *ngIf="loading" diameter="20" class="mr-2"></mat-spinner>
+    <span *ngIf="!loading">Crear Transportista</span>
+    <span *ngIf="loading">Creando...</span>
+  </button>
+</mat-dialog-actions> 

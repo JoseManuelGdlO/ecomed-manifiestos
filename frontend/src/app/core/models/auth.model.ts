@@ -1,6 +1,6 @@
 export interface LoginRequest {
-  email: string;
-  password: string;
+  correo: string;
+  contrasena: string;
 }
 
 export interface LoginResponse {
@@ -14,19 +14,17 @@ export interface LoginResponse {
 
 export interface User {
   id: number;
-  email: string;
-  nombre: string;
-  apellido: string;
-  role: Role;
-  created_at: string;
-  updated_at: string;
+  nombre_completo: string;
+  correo: string;
+  id_rol: number;
+  rol: Role;
 }
 
 export interface Role {
   id: number;
   nombre: string;
-  descripcion: string;
-  permisos: string[];
+  descripcion?: string;
+  permisos?: string[];
 }
 
 export interface AuthError {

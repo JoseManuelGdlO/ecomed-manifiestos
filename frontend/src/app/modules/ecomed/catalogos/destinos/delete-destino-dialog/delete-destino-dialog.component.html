@@ -1,0 +1,62 @@
+<div class="p-6">
+  <div class="flex items-center mb-6">
+    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 mr-4">
+      <mat-icon class="text-red-600 dark:text-red-400" [svgIcon]="'heroicons_outline:exclamation-triangle'"></mat-icon>
+    </div>
+    <div>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Eliminar Destino</h2>
+      <p class="text-gray-600 dark:text-gray-400">¿Estás seguro de que quieres eliminar este destino?</p>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="mb-4">
+    <div class="flex items-center p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+      <mat-icon class="text-red-500 mr-2" [svgIcon]="'heroicons_outline:exclamation-triangle'"></mat-icon>
+      <span class="text-red-700 dark:text-red-400 text-sm">{{ error }}</span>
+    </div>
+  </div>
+
+  <!-- Destino Info -->
+  <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6">
+    <div class="space-y-2">
+      <div class="flex items-center">
+        <span class="font-medium text-gray-700 dark:text-gray-300 mr-2">Nombre:</span>
+        <span class="text-gray-900 dark:text-white">{{ data.nombre }}</span>
+      </div>
+      <div class="flex items-center">
+        <span class="font-medium text-gray-700 dark:text-gray-300 mr-2">Razón Social:</span>
+        <span class="text-gray-900 dark:text-white">{{ data.razon_social }}</span>
+      </div>
+      <div *ngIf="data.autorizacion_semarnat" class="flex items-center">
+        <span class="font-medium text-gray-700 dark:text-gray-300 mr-2">Autorización SEMARNAT:</span>
+        <span class="text-gray-900 dark:text-white">{{ data.autorizacion_semarnat }}</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="text-gray-600 dark:text-gray-400 mb-6">
+    Esta acción no se puede deshacer. El destino será eliminado permanentemente del sistema.
+  </p>
+
+  <!-- Actions -->
+  <div class="flex justify-end space-x-3">
+    <button
+      type="button"
+      mat-stroked-button
+      (click)="onCancel()"
+      [disabled]="loading">
+      Cancelar
+    </button>
+    <button
+      type="button"
+      mat-flat-button
+      color="warn"
+      (click)="onConfirm()"
+      [disabled]="loading">
+      <mat-spinner *ngIf="loading" diameter="20" class="mr-2"></mat-spinner>
+      <span *ngIf="!loading">Eliminar</span>
+      <span *ngIf="loading">Eliminando...</span>
+    </button>
+  </div>
+</div> 

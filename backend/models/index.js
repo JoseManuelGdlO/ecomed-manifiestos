@@ -1,56 +1,43 @@
-const Role = require('./Role');
-const User = require('./User');
-const Residuo = require('./Residuo');
-const Destino = require('./Destino');
-const Vehiculo = require('./Vehiculo');
-const Transportista = require('./Transportista');
-const Cliente = require('./Cliente');
-const Manifiesto = require('./Manifiesto');
-const ManifiestoResiduo = require('./ManifiestoResiduo');
-const ManifiestoEstado = require('./ManifiestoEstado');
+'use strict';
 
-// Definir relaciones
-User.belongsTo(Role, { foreignKey: 'id_rol', as: 'rol' });
-Role.hasMany(User, { foreignKey: 'id_rol', as: 'usuarios' });
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+const process = require('process');
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.json')[env];
+const db = {};
 
-// Relaciones para Cliente
-Cliente.belongsTo(Destino, { foreignKey: 'id_destino', as: 'destino' });
-Destino.hasMany(Cliente, { foreignKey: 'id_destino', as: 'clientes' });
+let sequelize;
+if (config.use_env_variable) {
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else {
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
+}
 
-Cliente.belongsTo(Transportista, { foreignKey: 'id_transportista', as: 'transportista' });
-Transportista.hasMany(Cliente, { foreignKey: 'id_transportista', as: 'clientes' });
+fs
+  .readdirSync(__dirname)
+  .filter(file => {
+    return (
+      file.indexOf('.') !== 0 &&
+      file !== basename &&
+      file.slice(-3) === '.js' &&
+      file.indexOf('.test.js') === -1
+    );
+  })
+  .forEach(file => {
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
+  });
 
-// Relaciones para Manifiesto
-Manifiesto.belongsTo(Cliente, { foreignKey: 'id_cliente', as: 'cliente' });
-Cliente.hasMany(Manifiesto, { foreignKey: 'id_cliente', as: 'manifiestos' });
-
-// Relaciones muchos a muchos entre Manifiesto y Residuo
-Manifiesto.belongsToMany(Residuo, { 
-  through: ManifiestoResiduo, 
-  foreignKey: 'id_manifiesto', 
-  otherKey: 'id_residuo',
-  as: 'residuos' 
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
 });
-Residuo.belongsToMany(Manifiesto, { 
-  through: ManifiestoResiduo, 
-  foreignKey: 'id_residuo', 
-  otherKey: 'id_manifiesto',
-  as: 'manifiestos' 
-});
 
-// Relaciones para ManifiestoEstado
-Manifiesto.hasOne(ManifiestoEstado, { foreignKey: 'id_manifiesto', as: 'estado' });
-ManifiestoEstado.belongsTo(Manifiesto, { foreignKey: 'id_manifiesto', as: 'manifiesto' });
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
-module.exports = {
-  Role,
-  User,
-  Residuo,
-  Destino,
-  Vehiculo,
-  Transportista,
-  Cliente,
-  Manifiesto,
-  ManifiestoResiduo,
-  ManifiestoEstado
-}; 
+module.exports = db;

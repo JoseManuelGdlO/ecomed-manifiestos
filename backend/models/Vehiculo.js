@@ -1,55 +1,44 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
-
-const Vehiculo = sequelize.define('Vehiculo', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false
-  },
-  marca: {
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    validate: {
-      notEmpty: true,
-      len: [2, 50]
+'use strict';
+const { Model } = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Vehiculo extends Model {
+    static associate(models) {
+      // La asociación con Transportista se eliminó ya que ahora los transportistas
+      // tienen sus propios campos de vehículo (tipo_vehiculo, placa)
     }
-  },
-  nombre: {
-    type: DataTypes.STRING(100),
-    allowNull: false,
-    validate: {
-      notEmpty: true,
-      len: [2, 100]
-    }
-  },
-  descripcion: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-    validate: {
-      len: [0, 1000]
-    }
-  },
-  placa: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
-    validate: {
-      len: [0, 20]
-    }
-  },
-  deleted_at: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: null
   }
-}, {
-  tableName: 'vehiculos',
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
-  paranoid: true,
-  deletedAt: 'deleted_at'
-});
-
-module.exports = Vehiculo; 
+  Vehiculo.init({
+    placa: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    },
+    marca: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    modelo: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    anio: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    capacidad: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true
+    },
+    tipo: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }
+  }, {
+    sequelize,
+    modelName: 'Vehiculo',
+    tableName: 'vehiculos',
+    timestamps: true,
+    paranoid: true
+  });
+  return Vehiculo;
+}; 

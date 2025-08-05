@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TranslocoModule } from '@ngneat/transloco';
 import { ProjectService } from 'app/modules/admin/dashboards/project/project.service';
 import { ApexOptions, NgApexchartsModule } from 'ng-apexcharts';
@@ -31,6 +31,9 @@ export class ProjectComponent implements OnInit, OnDestroy
     chartYearlyExpenses: ApexOptions = {};
     data: any;
     selectedProject: string = 'ACME Corp. Backend App';
+    currentRoute: string = '';
+    pageTitle: string = 'Dashboard';
+    pageDescription: string = 'Panel principal del sistema';
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -39,6 +42,7 @@ export class ProjectComponent implements OnInit, OnDestroy
     constructor(
         private _projectService: ProjectService,
         private _router: Router,
+        private _route: ActivatedRoute,
     )
     {
     }
@@ -52,6 +56,10 @@ export class ProjectComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
+        // Get current route and set page info
+        this.currentRoute = this._router.url;
+        this.setPageInfo();
+
         // Get the data
         this._projectService.data$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -104,6 +112,31 @@ export class ProjectComponent implements OnInit, OnDestroy
     trackByFn(index: number, item: any): any
     {
         return item.id || index;
+    }
+
+    /**
+     * Set page information based on current route
+     */
+    private setPageInfo(): void {
+        if (this.currentRoute.includes('/clientes')) {
+            this.pageTitle = 'Gestión de Clientes';
+            this.pageDescription = 'Administra los clientes del sistema';
+        } else if (this.currentRoute.includes('/manifiestos')) {
+            this.pageTitle = 'Gestión de Manifiestos';
+            this.pageDescription = 'Administra los manifiestos de residuos';
+        } else if (this.currentRoute.includes('/reportes')) {
+            this.pageTitle = 'Reportes';
+            this.pageDescription = 'Genera reportes y estadísticas';
+        } else if (this.currentRoute.includes('/catalogos')) {
+            this.pageTitle = 'Catálogos';
+            this.pageDescription = 'Administra los catálogos del sistema';
+        } else if (this.currentRoute.includes('/usuarios')) {
+            this.pageTitle = 'Gestión de Usuarios';
+            this.pageDescription = 'Administra los usuarios del sistema';
+        } else {
+            this.pageTitle = 'Dashboard';
+            this.pageDescription = 'Panel principal del sistema';
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------

@@ -1,16 +1,50 @@
 const { Destino } = require('../models');
+const { Op } = require('sequelize');
 
 // Obtener todos los destinos (solo activos)
 const getAllDestinos = async (req, res) => {
   try {
+    const { page = 1, limit = 10, sort = 'id', order = 'asc', search = '' } = req.query;
+
+    let whereClause = {};
+
+    if (search && search.trim() !== '') {
+      whereClause = {
+        [Op.or]: [
+          { nombre: { [Op.like]: `%${search}%` } },
+          { razon_social: { [Op.like]: `%${search}%` } },
+          { autorizacion_semarnat: { [Op.like]: `%${search}%` } }
+        ]
+      };
+    }
+
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    let orderClause = [[sort, order.toUpperCase()]];
+    if (sort === 'created_at') {
+      orderClause = [['created_at', order.toUpperCase()]];
+    }
+
+    const total = await Destino.count({
+      where: whereClause,
+      paranoid: true
+    });
+
     const destinos = await Destino.findAll({
-      order: [['created_at', 'DESC']],
-      paranoid: true // Solo destinos no eliminados
+      where: whereClause,
+      order: orderClause,
+      limit: parseInt(limit),
+      offset: offset,
+      paranoid: true
     });
 
     res.json({
       success: true,
-      data: destinos
+      data: destinos,
+      total: total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(total / parseInt(limit))
     });
 
   } catch (error) {

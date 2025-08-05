@@ -40,6 +40,7 @@ export class ApiService {
    */
   post<T>(endpoint: string, data: any): Observable<T> {
     const url = `${this.baseUrl}${endpoint}`;
+    console.log('ApiService: POST request', { url, data });
     
     return this.http.post<T>(url, data, {
       headers: this.createHeaders()
