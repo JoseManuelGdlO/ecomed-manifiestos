@@ -1,0 +1,144 @@
+<div class="clientes-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>CLIENTES</h1>
+        <p>Gestión de clientes</p>
+      </div>
+      <div class="actions">
+        <button mat-raised-button color="primary" (click)="openAddDialog()">
+          <mat-icon>add</mat-icon>
+          Agregar Cliente
+        </button>
+        <button mat-icon-button (click)="loadClientes()" [disabled]="loading">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <mat-card class="search-card">
+    <mat-card-content>
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscar clientes...</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (input)="onSearchChange()" placeholder="Buscar por registro ambiental, razón social, correo o teléfono">
+        <mat-icon matSuffix>search</mat-icon>
+        <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="clearSearch()">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Error Display -->
+  <div *ngIf="error" class="error-message">
+    <mat-icon>error</mat-icon>
+    {{ error }}
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Cargando clientes...</p>
+  </div>
+
+  <!-- Table -->
+  <mat-card *ngIf="!loading" class="table-card">
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange()">
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+            <td mat-cell *matCellDef="let cliente"> {{ cliente.id }} </td>
+          </ng-container>
+
+          <!-- Registro Ambiental Column -->
+          <ng-container matColumnDef="numero_registro_ambiental">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Registro Ambiental </th>
+            <td mat-cell *matCellDef="let cliente"> {{ cliente.numero_registro_ambiental }} </td>
+          </ng-container>
+
+          <!-- Razón Social Column -->
+          <ng-container matColumnDef="nombre_razon_social">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Razón Social </th>
+            <td mat-cell *matCellDef="let cliente"> {{ cliente.nombre_razon_social }} </td>
+          </ng-container>
+
+          <!-- RFC Column -->
+          <ng-container matColumnDef="rfc">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> RFC </th>
+            <td mat-cell *matCellDef="let cliente"> {{ cliente.rfc || 'N/A' }} </td>
+          </ng-container>
+
+          <!-- Teléfono Column -->
+          <ng-container matColumnDef="telefono">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Teléfono </th>
+            <td mat-cell *matCellDef="let cliente"> {{ cliente.telefono || 'N/A' }} </td>
+          </ng-container>
+
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+            <td mat-cell *matCellDef="let cliente"> {{ cliente.email || 'N/A' }} </td>
+          </ng-container>
+
+          <!-- Zona Column -->
+          <ng-container matColumnDef="zona">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Zona </th>
+            <td mat-cell *matCellDef="let cliente"> {{ cliente.zona || 'N/A' }} </td>
+          </ng-container>
+
+          <!-- Delegación Column -->
+          <ng-container matColumnDef="delegacion">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Delegación </th>
+            <td mat-cell *matCellDef="let cliente"> {{ cliente.delegacion || 'N/A' }} </td>
+          </ng-container>
+
+          <!-- Estado Column -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
+            <td mat-cell *matCellDef="let cliente"> {{ cliente.estado || 'N/A' }} </td>
+          </ng-container>
+
+          <!-- Destino Column -->
+          <ng-container matColumnDef="destino">
+            <th mat-header-cell *matHeaderCellDef> Destino </th>
+            <td mat-cell *matCellDef="let cliente"> {{ getDestinoName(cliente) }} </td>
+          </ng-container>
+
+          <!-- Transportista Column -->
+          <ng-container matColumnDef="transportista">
+            <th mat-header-cell *matHeaderCellDef> Transportista </th>
+            <td mat-cell *matCellDef="let cliente"> {{ getTransportistaName(cliente) }} </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+            <td mat-cell *matCellDef="let cliente">
+              <button mat-icon-button color="primary" (click)="openEditDialog(cliente)" matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="openDeleteDialog(cliente)" matTooltip="Eliminar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- Paginator -->
+        <mat-paginator 
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          showFirstLastButtons
+          (page)="onPageChange()">
+        </mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div> 

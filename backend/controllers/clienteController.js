@@ -22,9 +22,7 @@ const getAllClientes = async (req, res) => {
     const limitNum = parseInt(limit);
 
     // Construir filtros
-    const whereClause = {
-      deleted_at: null // Solo clientes activos
-    };
+    const whereClause = {};
 
     // Filtro de búsqueda general
     if (search) {
@@ -134,8 +132,7 @@ const getClienteFilters = async (req, res) => {
     const zonas = await Cliente.findAll({
       attributes: [[require('sequelize').fn('DISTINCT', require('sequelize').col('zona')), 'zona']],
       where: {
-        zona: { [Op.ne]: null },
-        deleted_at: null
+        zona: { [Op.ne]: null }
       },
       raw: true
     });
@@ -144,8 +141,7 @@ const getClienteFilters = async (req, res) => {
     const delegaciones = await Cliente.findAll({
       attributes: [[require('sequelize').fn('DISTINCT', require('sequelize').col('delegacion')), 'delegacion']],
       where: {
-        delegacion: { [Op.ne]: null },
-        deleted_at: null
+        delegacion: { [Op.ne]: null }
       },
       raw: true
     });
@@ -154,8 +150,7 @@ const getClienteFilters = async (req, res) => {
     const estados = await Cliente.findAll({
       attributes: [[require('sequelize').fn('DISTINCT', require('sequelize').col('estado')), 'estado']],
       where: {
-        estado: { [Op.ne]: null },
-        deleted_at: null
+        estado: { [Op.ne]: null }
       },
       raw: true
     });
@@ -163,14 +158,12 @@ const getClienteFilters = async (req, res) => {
     // Obtener destinos disponibles
     const destinos = await Destino.findAll({
       attributes: ['id', 'nombre', 'razon_social'],
-      where: { deleted_at: null },
       order: [['nombre', 'ASC']]
     });
 
     // Obtener transportistas disponibles
     const transportistas = await Transportista.findAll({
       attributes: ['id', 'razon_social', 'placa'],
-      where: { deleted_at: null },
       order: [['razon_social', 'ASC']]
     });
 
@@ -242,6 +235,7 @@ const createCliente = async (req, res) => {
     const { 
       numero_registro_ambiental, 
       nombre_razon_social, 
+      rfc,
       codigo_postal, 
       calle, 
       num_ext, 
@@ -250,7 +244,7 @@ const createCliente = async (req, res) => {
       delegacion, 
       estado, 
       telefono, 
-      correo, 
+      email, 
       zona, 
       id_destino, 
       id_transportista 

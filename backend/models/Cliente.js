@@ -31,6 +31,26 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
+    codigo_postal: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    calle: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    num_ext: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    num_int: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    colonia: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     direccion: {
       type: DataTypes.TEXT,
       allowNull: true
@@ -79,7 +99,10 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Cliente',
     tableName: 'clientes',
     timestamps: true,
-    paranoid: true
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    paranoid: true,
+    deletedAt: 'deleted_at'
   });
   return Cliente;
 }; 

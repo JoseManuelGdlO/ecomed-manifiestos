@@ -199,9 +199,7 @@ export const appRoutes: Route[] = [
             ]},
 
             // Ecomed Routes - Clientes (All roles)
-            {path: 'clientes', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
-            {path: 'clientes/nuevo', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
-            {path: 'clientes/carga-masiva', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},
+            {path: 'clientes', loadChildren: () => import('app/modules/ecomed/clientes/clientes.routes')},
 
             // Ecomed Routes - Manifiestos (All roles)
             {path: 'manifiestos', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes')},

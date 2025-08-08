@@ -1,0 +1,251 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>
+    <mat-icon>add</mat-icon>
+    Agregar Cliente
+  </h2>
+
+  <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="dialog-content">
+      <div class="form-grid">
+        <!-- Registro Ambiental -->
+        <mat-form-field appearance="outline">
+          <mat-label>Número de Registro Ambiental *</mat-label>
+          <input matInput formControlName="numero_registro_ambiental" placeholder="Ingrese el número de registro ambiental">
+          <mat-error *ngIf="clienteForm.get('numero_registro_ambiental')?.hasError('required')">
+            El número de registro ambiental es requerido
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('numero_registro_ambiental')?.hasError('minlength')">
+            El número de registro ambiental debe tener al menos 3 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Razón Social -->
+        <mat-form-field appearance="outline">
+          <mat-label>Razón Social *</mat-label>
+          <input matInput formControlName="nombre_razon_social" placeholder="Ingrese la razón social">
+          <mat-error *ngIf="clienteForm.get('nombre_razon_social')?.hasError('required')">
+            La razón social es requerida
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('nombre_razon_social')?.hasError('minlength')">
+            La razón social debe tener al menos 3 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <!-- RFC -->
+        <mat-form-field appearance="outline">
+          <mat-label>RFC</mat-label>
+          <input matInput formControlName="rfc" placeholder="Ingrese el RFC">
+          <mat-error *ngIf="clienteForm.get('rfc')?.hasError('minlength')">
+            El RFC debe tener al menos 10 caracteres
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('rfc')?.hasError('maxlength')">
+            El RFC no puede exceder 13 caracteres
+          </mat-error>
+          <mat-error *ngIf="validationErrors['rfc']">
+            {{ validationErrors['rfc'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Código Postal -->
+        <mat-form-field appearance="outline">
+          <mat-label>Código Postal *</mat-label>
+          <input matInput formControlName="codigo_postal" placeholder="Ingrese el código postal">
+          <mat-error *ngIf="clienteForm.get('codigo_postal')?.hasError('required')">
+            El código postal es requerido
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('codigo_postal')?.hasError('minlength')">
+            El código postal debe tener al menos 5 caracteres
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('codigo_postal')?.hasError('maxlength')">
+            El código postal no puede exceder 10 caracteres
+          </mat-error>
+          <mat-error *ngIf="validationErrors['codigo_postal']">
+            {{ validationErrors['codigo_postal'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Calle -->
+        <mat-form-field appearance="outline">
+          <mat-label>Calle *</mat-label>
+          <input matInput formControlName="calle" placeholder="Ingrese la calle">
+          <mat-error *ngIf="clienteForm.get('calle')?.hasError('required')">
+            La calle es requerida
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('calle')?.hasError('minlength')">
+            La calle debe tener al menos 2 caracteres
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('calle')?.hasError('maxlength')">
+            La calle no puede exceder 100 caracteres
+          </mat-error>
+          <mat-error *ngIf="validationErrors['calle']">
+            {{ validationErrors['calle'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Número Exterior -->
+        <mat-form-field appearance="outline">
+          <mat-label>Número Exterior *</mat-label>
+          <input matInput formControlName="num_ext" placeholder="Ingrese el número exterior">
+          <mat-error *ngIf="clienteForm.get('num_ext')?.hasError('required')">
+            El número exterior es requerido
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('num_ext')?.hasError('minlength')">
+            El número exterior debe tener al menos 1 carácter
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('num_ext')?.hasError('maxlength')">
+            El número exterior no puede exceder 20 caracteres
+          </mat-error>
+          <mat-error *ngIf="validationErrors['num_ext']">
+            {{ validationErrors['num_ext'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Número Interior -->
+        <mat-form-field appearance="outline">
+          <mat-label>Número Interior</mat-label>
+          <input matInput formControlName="num_int" placeholder="Ingrese el número interior (opcional)">
+          <mat-error *ngIf="clienteForm.get('num_int')?.hasError('maxlength')">
+            El número interior no puede exceder 20 caracteres
+          </mat-error>
+          <mat-error *ngIf="validationErrors['num_int']">
+            {{ validationErrors['num_int'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Colonia -->
+        <mat-form-field appearance="outline">
+          <mat-label>Colonia *</mat-label>
+          <input matInput formControlName="colonia" placeholder="Ingrese la colonia">
+          <mat-error *ngIf="clienteForm.get('colonia')?.hasError('required')">
+            La colonia es requerida
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('colonia')?.hasError('minlength')">
+            La colonia debe tener al menos 2 caracteres
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('colonia')?.hasError('maxlength')">
+            La colonia no puede exceder 100 caracteres
+          </mat-error>
+          <mat-error *ngIf="validationErrors['colonia']">
+            {{ validationErrors['colonia'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Teléfono -->
+        <mat-form-field appearance="outline">
+          <mat-label>Teléfono *</mat-label>
+          <input matInput formControlName="telefono" placeholder="Ingrese el teléfono">
+          <mat-error *ngIf="clienteForm.get('telefono')?.hasError('required')">
+            El teléfono es requerido
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('telefono')?.hasError('pattern')">
+            Ingrese un teléfono válido
+          </mat-error>
+          <mat-error *ngIf="validationErrors['telefono']">
+            {{ validationErrors['telefono'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Email -->
+        <mat-form-field appearance="outline">
+          <mat-label>Email *</mat-label>
+          <input matInput formControlName="email" placeholder="Ingrese el email" type="email">
+          <mat-error *ngIf="clienteForm.get('email')?.hasError('required')">
+            El email es requerido
+          </mat-error>
+          <mat-error *ngIf="clienteForm.get('email')?.hasError('email')">
+            Ingrese un email válido
+          </mat-error>
+          <mat-error *ngIf="validationErrors['email']">
+            {{ validationErrors['email'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Zona -->
+        <mat-form-field appearance="outline">
+          <mat-label>Zona *</mat-label>
+          <input matInput formControlName="zona" placeholder="Ingrese la zona">
+          <mat-error *ngIf="clienteForm.get('zona')?.hasError('required')">
+            La zona es requerida
+          </mat-error>
+          <mat-error *ngIf="validationErrors['zona']">
+            {{ validationErrors['zona'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Delegación -->
+        <mat-form-field appearance="outline">
+          <mat-label>Delegación *</mat-label>
+          <input matInput formControlName="delegacion" placeholder="Ingrese la delegación">
+          <mat-error *ngIf="clienteForm.get('delegacion')?.hasError('required')">
+            La delegación es requerida
+          </mat-error>
+          <mat-error *ngIf="validationErrors['delegacion']">
+            {{ validationErrors['delegacion'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Estado -->
+        <mat-form-field appearance="outline">
+          <mat-label>Estado *</mat-label>
+          <input matInput formControlName="estado" placeholder="Ingrese el estado">
+          <mat-error *ngIf="clienteForm.get('estado')?.hasError('required')">
+            El estado es requerido
+          </mat-error>
+          <mat-error *ngIf="validationErrors['estado']">
+            {{ validationErrors['estado'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Destino -->
+        <mat-form-field appearance="outline">
+          <mat-label>Destino *</mat-label>
+          <mat-select formControlName="id_destino">
+            <mat-option *ngFor="let destino of destinos" [value]="destino.id">
+              {{ destino.nombre }} - {{ destino.razon_social }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="clienteForm.get('id_destino')?.hasError('required')">
+            El destino es requerido
+          </mat-error>
+          <mat-error *ngIf="validationErrors['id_destino']">
+            {{ validationErrors['id_destino'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Transportista -->
+        <mat-form-field appearance="outline">
+          <mat-label>Transportista *</mat-label>
+          <mat-select formControlName="id_transportista">
+            <mat-option *ngFor="let transportista of transportistas" [value]="transportista.id">
+              {{ transportista.razon_social }} - {{ transportista.placa }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="clienteForm.get('id_transportista')?.hasError('required')">
+            El transportista es requerido
+          </mat-error>
+          <mat-error *ngIf="validationErrors['id_transportista']">
+            {{ validationErrors['id_transportista'] }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+
+
+      <!-- Error Display -->
+      <div *ngIf="error" class="error-message">
+        <mat-icon>error</mat-icon>
+        {{ error }}
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button type="button" mat-button (click)="onCancel()" [disabled]="loading">
+        Cancelar
+      </button>
+      <button type="submit" mat-raised-button color="primary" [disabled]="clienteForm.invalid || loading">
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <span *ngIf="!loading">Guardar</span>
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div> 

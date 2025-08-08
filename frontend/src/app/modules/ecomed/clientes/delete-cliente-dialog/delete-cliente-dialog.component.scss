@@ -1,0 +1,119 @@
+.dialog-container {
+  max-width: 500px;
+  width: 100%;
+}
+
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 16px 24px 0 24px;
+  
+  mat-icon {
+    color: #f44336;
+  }
+}
+
+.dialog-content {
+  padding: 16px 24px;
+}
+
+.confirmation-message {
+  margin-bottom: 16px;
+  
+  p {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+  }
+}
+
+.cliente-details {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 16px;
+  
+  .detail-row {
+    margin-bottom: 8px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    strong {
+      color: #333;
+      min-width: 120px;
+      display: inline-block;
+    }
+  }
+}
+
+.warning-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #fff3e0;
+  color: #e65100;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  
+  mat-icon {
+    color: #e65100;
+    margin-top: 2px;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #ffebee;
+  color: #c62828;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  
+  mat-icon {
+    color: #c62828;
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+  
+  button {
+    min-width: 100px;
+    
+    mat-spinner {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .dialog-content {
+    padding: 12px 16px;
+  }
+  
+  h2[mat-dialog-title] {
+    padding: 12px 16px 0 16px;
+  }
+  
+  mat-dialog-actions {
+    padding: 12px 16px;
+  }
+  
+  .cliente-details .detail-row strong {
+    min-width: 100px;
+  }
+} 

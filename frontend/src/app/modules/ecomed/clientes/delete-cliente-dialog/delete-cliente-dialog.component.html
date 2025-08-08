@@ -1,0 +1,63 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>
+    <mat-icon>delete</mat-icon>
+    Eliminar Cliente
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <div class="confirmation-message">
+      <p>¿Está seguro de que desea eliminar el siguiente cliente?</p>
+    </div>
+
+    <div class="cliente-details">
+      <div class="detail-row">
+        <strong>ID:</strong> {{ data.id }}
+      </div>
+      <div class="detail-row">
+        <strong>Registro Ambiental:</strong> {{ data.numero_registro_ambiental }}
+      </div>
+      <div class="detail-row">
+        <strong>Razón Social:</strong> {{ data.nombre_razon_social }}
+      </div>
+      <div class="detail-row">
+        <strong>RFC:</strong> {{ data.rfc || 'N/A' }}
+      </div>
+      <div class="detail-row">
+        <strong>Email:</strong> {{ data.email }}
+      </div>
+      <div class="detail-row">
+        <strong>Teléfono:</strong> {{ data.telefono }}
+      </div>
+      <div class="detail-row">
+        <strong>Zona:</strong> {{ data.zona }}
+      </div>
+      <div class="detail-row">
+        <strong>Delegación:</strong> {{ data.delegacion }}
+      </div>
+      <div class="detail-row">
+        <strong>Estado:</strong> {{ data.estado }}
+      </div>
+    </div>
+
+    <div class="warning-message">
+      <mat-icon>warning</mat-icon>
+      <p>Esta acción no se puede deshacer. El cliente será eliminado permanentemente.</p>
+    </div>
+
+    <!-- Error Display -->
+    <div *ngIf="error" class="error-message">
+      <mat-icon>error</mat-icon>
+      {{ error }}
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" mat-button (click)="onCancel()" [disabled]="loading">
+      Cancelar
+    </button>
+    <button type="button" mat-raised-button color="warn" (click)="onConfirm()" [disabled]="loading">
+      <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+      <span *ngIf="!loading">Eliminar</span>
+    </button>
+  </mat-dialog-actions>
+</div> 
